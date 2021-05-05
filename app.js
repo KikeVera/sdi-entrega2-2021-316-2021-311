@@ -47,10 +47,14 @@ app.use(express.static('public'));
 
 
 
-
 app.set('port', 8081);
+app.set('db','mongodb://sdi:sdi@cluster0-shard-00-00.p4zvd.mongodb.net:27017,cluster0-shard-00-01.p4zvd.mongodb.net:27017,' +
+    'cluster0-shard-00-02.p4zvd.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-12gia1-shard-0&authSource=' +
+    'admin&retryWrites=true&w=majority');
 
 
+require("./routes/rusuarios.js")(app,swig,gestorBD); // (app, param1, param2, etc.)
+require("./routes/rofertas.js")(app,swig,gestorBD); // (app, param1, param2, etc.)
 
 
 //Rutas/controladores por lógica
@@ -59,22 +63,10 @@ require("./routes/rusuarios.js")(app,swig,gestorBD); // (app, param1, param2, et
 
 
 app.get('/', function (req, res) {
-    res.redirect('/tienda');
+    res.redirect('/ofertas/tienda');
 })
 
-app.get('/error', function (req, res) {
-    let mensaje = req.query.mensaje;
-    let tipoMensaje = req.query.tipoMensaje;
 
-    let respuesta = swig.renderFile('views/error.html',
-        {
-            error: mensaje,
-            tipoMensaje: tipoMensaje
-        });
-    res.send(respuesta);
-
-
-});
 
 app.use(function(err,req,res,next){
     console.log("Error producido: "+err)
