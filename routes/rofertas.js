@@ -28,16 +28,11 @@ module.exports = function(app,swig,gestorBD) {
                     {
                         ofertas : ofertas,
                         paginas : paginas,
-                        actual : pg
+                        actual : pg,
+                        user : req.session.usuario
                     });
                 res.send(respuesta);
             }
         });
-
-
-
     });
-
-
-
 };

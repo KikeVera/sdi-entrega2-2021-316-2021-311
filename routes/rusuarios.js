@@ -25,22 +25,30 @@ module.exports = function(app,swig,gestorBD) {
             name : req.body.name,
             surname:req.body.surname,
             password : seguro,
-            rol : "estandar"
+            rol : "estandar",
+            coste : 100
         }
-
-        gestorBD.insertarUsuario(usuario, function(id) {
-            if (id == null){
-                res.redirect("/usuario/registrarse?mensaje=Error al registrar usuario");
-            } else {
-                console.log("aqui")
-                res.redirect("/usuario/identificarse?mensaje=Nuevo usuario registrado");
-                console.log("aqui2")
+        let criterio =  { email: usuario.email};
+        gestorBD.obtenerUsuarios(criterio,function (usuarios)
+        {
+            if (usuarios == null || usuarios.length == 0) {
+                gestorBD.insertarUsuario(usuario, function (id) {
+                    if (id == null) {
+                        res.redirect("/usuario/registrarse?mensaje=Error al registrar usuario");
+                    } else {
+                        res.redirect("/usuario/identificarse?mensaje=Nuevo usuario registrado");
+                    }
+                });
+            }else{
+                res.redirect("/usuario/registrarse?mensaje=Error ya existe un usuario con el email aportado");
             }
         });
     });
 
     app.get("/usuario/identificarse", function(req, res) {
-        let respuesta = swig.renderFile('views/bidentificacion.html', {});
+        let respuesta = swig.renderFile('views/bidentificacion.html', {
+            user: req.session.usuario
+        });
         res.send(respuesta);
     });
 
@@ -66,6 +74,10 @@ module.exports = function(app,swig,gestorBD) {
         });
     });
 
+    app.get('usuario/desconectarse', function (req, res) {
+        req.session.usuario = null;
+        res.redirect('/ofertas/identificarse');
+    })
 
 
 

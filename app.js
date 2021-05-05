@@ -55,7 +55,7 @@ app.set('db','mongodb://sdi:sdi@cluster0-shard-00-00.p4zvd.mongodb.net:27017,clu
 
 require("./routes/rusuarios.js")(app,swig,gestorBD); // (app, param1, param2, etc.)
 require("./routes/rofertas.js")(app,swig,gestorBD); // (app, param1, param2, etc.)
-
+require("./routes/radmin.js")(app,swig,gestorBD); // (app, param1, param2, etc.)
 
 //Rutas/controladores por lógica
 require("./routes/rusuarios.js")(app,swig,gestorBD); // (app, param1, param2, etc.)

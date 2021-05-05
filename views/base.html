@@ -26,13 +26,17 @@
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
         <!-- NAVEGADOR VACIO -->
-
-
       </ul>
+      {% if user == null %}
       <ul class="nav navbar-nav navbar-right">
 	    <li><a href="/usuario/registrarse"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>
         <li><a href="/usuario/identificarse"><span class="glyphicon glyphicon-log-in"></span> Identifícate</a></li>
       </ul>
+      {% else %}
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/usuario/desconectarse"><span class="glyphicon glyphicon-log-out"></span> Desconectarse</a></li>
+      </ul>
+      {% endif %}
     </div>
   </div>
 </nav>
