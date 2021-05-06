@@ -67,16 +67,16 @@ module.exports = function(app,swig,gestorBD) {
                 res.redirect("/usuario/identificarse?mensaje=Email o constraseña incorrecta");
             } else {
 
-                req.session.usuario = usuarios[0].email;
+                req.session.usuario = usuarios[0];
                 console.log(req.session.usuario);
                 res.redirect('/ofertas/tienda');
             }
         });
     });
 
-    app.get('usuario/desconectarse', function (req, res) {
+    app.get('/usuario/desconectarse', function (req, res) {
         req.session.usuario = null;
-        res.redirect('/ofertas/identificarse');
+        res.redirect('/usuario/identificarse');
     })
 
 

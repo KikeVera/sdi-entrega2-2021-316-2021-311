@@ -61,16 +61,11 @@ let routerAdmin = express.Router();
 routerAdmin.use(function(req, res, next) {
     console.log("routerAdmin");
 
-
-    gestorBD.obtenerUsuarios(
-        {email: req.session.usuario }, function (usuarios) {
-            console.log(usuarios[0]);
-            if(usuarios[0].rol ==="admin" ){
-                next();
-            } else {
-                res.redirect("/ofertas/tienda?mensaje=Solo los administradores pueden acceder a esta dirección");
-            }
-        })
+    if(req.session.usuario.rol == "admin"){
+        next();
+    }else {
+        res.redirect("/ofertas/tienda?mensaje=Solo los administradores pueden acceder a esta dirección");
+    }
 });
 
 app.use("/admin/users",routerAdmin);

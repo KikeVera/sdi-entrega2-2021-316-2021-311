@@ -25,31 +25,28 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
-
+        {% if user != null %}
         <li id="mTienda" class="active"><a href="/ofertas/tienda">Tienda</a></li>
-
-
+        {% endif %}
+        {% if user.rol == "estandar" %}
         <li id="sale-menu" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Ofertas<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li id="mOfertas"><a href="/ofertas/propias">Mis ofertas</a></li>
-            <li id="mOfertas"><a href="/ofertas/agregar">Agregar</a></li>
+            <li id="mOfertasPropias"><a href="/ofertas/propias">Mis ofertas</a></li>
+            <li id="mOfertasAgregar"><a href="/ofertas/agregar">Agregar</a></li>
 
           </ul>
         </li>
-
-        <li id="sale-menu" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Usuarios<span class="caret"></span></a>
+        {% endif %}
+        {% if user.rol == "admin" %}
+        <li id="user-menu" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Usuarios<span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li id="mUsuarios"><a href="/admin/users">Lista de usuarios</a></li>
 
           </ul>
         </li>
-
-
-
-        <
-
-
+        {% endif %}
       </ul>
+
       {% if user == null %}
       <ul class="nav navbar-nav navbar-right">
 	    <li><a href="/usuario/registrarse"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>

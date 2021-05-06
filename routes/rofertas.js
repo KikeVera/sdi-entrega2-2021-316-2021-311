@@ -30,7 +30,7 @@ module.exports = function(app,swig,gestorBD) {
                         ofertas : ofertas,
                         paginas : paginas,
                         actual : pg,
-                        user : req.session.usuario
+                        user : req.session.usuario,
                     });
                 res.send(respuesta);
             }
