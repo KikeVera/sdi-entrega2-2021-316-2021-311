@@ -38,6 +38,64 @@ app.use(expressSession({
     saveUninitialized: true
 }));
 
+// routerUsuarioSession
+var routerUsuarioSession = express.Router();
+routerUsuarioSession.use(function(req, res, next) {
+    console.log("routerUsuarioSession");
+    if ( req.session.usuario ) {
+        // dejamos correr la petición
+        next();
+    } else {
+        console.log("va a : "+req.session.destino)
+        res.redirect("/usuario/identificarse");
+    }
+});
+//Aplicar routerUsuarioSession
+app.use("/ofertas/agregar",routerUsuarioSession);
+app.use("/ofertas/propias",routerUsuarioSession);
+app.use("/admin/users",routerUsuarioSession);
+
+
+//routeradmin
+let routerAdmin = express.Router();
+routerAdmin.use(function(req, res, next) {
+    console.log("routerAdmin");
+
+
+    gestorBD.obtenerUsuarios(
+        {email: req.session.usuario }, function (usuarios) {
+            console.log(usuarios[0]);
+            if(usuarios[0].rol ==="admin" ){
+                next();
+            } else {
+                res.redirect("/ofertas/tienda?mensaje=Solo los administradores pueden acceder a esta dirección");
+            }
+        })
+});
+
+app.use("/admin/users",routerAdmin);
+
+
+//routerEstandar
+let routerEstandar = express.Router();
+routerEstandar.use(function(req, res, next) {
+    console.log("routerAdmin");
+
+
+    gestorBD.obtenerUsuarios(
+        {email: req.session.usuario }, function (usuarios) {
+            console.log(usuarios[0]);
+            if(usuarios[0].rol ==="estandar" ){
+                next();
+            } else {
+                res.redirect("/ofertas/tienda?mensaje=Solo los usuarios pueden acceder a está dirección");
+            }
+        })
+});
+
+app.use("/ofertas/agregar",routerEstandar);
+app.use("/ofertas/propias",routerEstandar);
+
 
 
 

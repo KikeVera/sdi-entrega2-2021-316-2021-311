@@ -7,7 +7,7 @@ module.exports = function(app,swig,gestorBD) {
             if (allUsers == null) {
                 res.redirect("/");
             } else {
-                let respuesta = swig.renderFile('views/bAdmin.html',
+                let respuesta = swig.renderFile('views/badmin.html',
                     {
                         users : allUsers
                     });
@@ -15,4 +15,40 @@ module.exports = function(app,swig,gestorBD) {
             }
         });
     });
+
+    app.post("/admin/users/delete", function(req, res) {
+
+
+        var users=req.body.checkboxUser;
+        if(Array.isArray(users)){
+            for(let i=0;i<users.length;i++) {
+                let criterio = {"email" : users[i] };
+                gestorBD.eliminarUsuario(criterio, function( users ) {
+
+                    if ( users == null ){
+                        res.redirect("/admin/users?mensaje=Error al borrar usuarios");
+                    }
+
+                });
+
+            }
+        }
+        else if(users!==undefined){
+            let criterio = {"email" : users };
+            gestorBD.eliminarUsuario(criterio, function( users ) {
+
+                if ( users == null ){
+                    res.redirect("/admin/users?mensaje=Error al borrar usuarios");
+                }
+
+            });
+
+        }
+
+
+
+        res.redirect("/admin/users");
+    });
+
+
 };

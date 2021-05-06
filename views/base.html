@@ -21,11 +21,34 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>                        
       </button>
-      <!-- ICONO -->
+      <img src="/img/logo.png" alt="logo"/>
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
-        <!-- NAVEGADOR VACIO -->
+
+        <li id="mTienda" class="active"><a href="/ofertas/tienda">Tienda</a></li>
+
+
+        <li id="sale-menu" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Ofertas<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li id="mOfertas"><a href="/ofertas/propias">Mis ofertas</a></li>
+            <li id="mOfertas"><a href="/ofertas/agregar">Agregar</a></li>
+
+          </ul>
+        </li>
+
+        <li id="sale-menu" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Usuarios<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li id="mUsuarios"><a href="/admin/users">Lista de usuarios</a></li>
+
+          </ul>
+        </li>
+
+
+
+        <
+
+
       </ul>
       {% if user == null %}
       <ul class="nav navbar-nav navbar-right">

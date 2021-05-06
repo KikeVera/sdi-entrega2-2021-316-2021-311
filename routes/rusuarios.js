@@ -64,7 +64,7 @@ module.exports = function(app,swig,gestorBD) {
         gestorBD.obtenerUsuarios(criterio, function(usuarios) {
             if (usuarios == null || usuarios.length == 0) {
                 req.session.usuario = null;
-                res.redirect("/usuario/registrarse?mensaje=Email o constraseña incorrecta");
+                res.redirect("/usuario/identificarse?mensaje=Email o constraseña incorrecta");
             } else {
 
                 req.session.usuario = usuarios[0].email;

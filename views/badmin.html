@@ -5,6 +5,7 @@
 
 <!-- Lista de usuarios -->
 <div class="table-responsive">
+    <form class="form-horizontal" method="post" action="/admin/users/delete" >
     <table class="table table-hover">
         <thead>
         <tr>
@@ -20,8 +21,11 @@
             <td>{{ user.email }}</td>
             <td>{{ user.name }}</td>
             <td>{{ user.surname }}</td>
+            <td  ><input type="checkbox" name="checkboxUser" value="{{ user.email }}" /></td>
         </tr>
         {% endfor %}
+        <button type="submit" id="btEliminar" class="btn btn-primary">Eliminar</button>
+        </form>
         </tbody>
     </table>
 </div>
