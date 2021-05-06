@@ -26,7 +26,7 @@ module.exports = function(app,swig,gestorBD) {
             surname:req.body.surname,
             password : seguro,
             rol : "estandar",
-            coste : 100
+            dinero : 100
         }
         let criterio =  { email: usuario.email};
         gestorBD.obtenerUsuarios(criterio,function (usuarios)
@@ -69,7 +69,12 @@ module.exports = function(app,swig,gestorBD) {
 
                 req.session.usuario = usuarios[0];
                 console.log(req.session.usuario);
-                res.redirect('/ofertas/tienda');
+                if(usuarios[0].rol == "admin"){
+                    res.redirect('/admin/users');
+                }else{
+                    res.redirect('/ofertas/tienda');
+                }
+
             }
         });
     });

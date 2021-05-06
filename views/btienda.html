@@ -42,7 +42,7 @@
                 <td>{{ oferta.detalles }}</td>
                 <td>{{ oferta.fecha.toLocaleDateString("es-ES")}}</td>
                 <td>{{ oferta.precio }}€</td>
-                {% if oferta.comprada %}
+                {% if oferta.comprada != null%}
                 <td>Comprada</td>
                 {% else %}
                 <td><a  href="/ofertas/comprar/{{oferta._id.toString()}}">Comprar</a></td>
