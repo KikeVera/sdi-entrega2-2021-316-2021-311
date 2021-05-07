@@ -31,8 +31,9 @@
         {% if user.rol == "estandar" %}
         <li id="sale-menu" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Ofertas<span class="caret"></span></a>
           <ul class="dropdown-menu">
+            <li id="mOfertasCompradas"><a href="/ofertas/compradas">Mis compras</a></li>
             <li id="mOfertasPropias"><a href="/ofertas/propias">Mis ofertas</a></li>
-            <li id="mOfertasAgregar"><a href="/ofertas/agregar">Agregar</a></li>
+            <li id="mOfertasAgregar"><a href="/ofertas/agregar">Agregar oferta</a></li>
 
           </ul>
         </li>
@@ -56,6 +57,12 @@
       <ul class="nav navbar-nav navbar-right">
         <li><a href="/usuario/desconectarse"><span class="glyphicon glyphicon-log-out"></span> Desconectarse</a></li>
       </ul>
+        {% if user.rol == "estandar" %}
+          <ul style="color:grey; margin:5px;" class="nav navbar-list navbar-right">
+              <li>Usuario : {{user.email}}</li>
+              <li>Saldo : {{user.dinero}} €</li>
+          </ul>
+        {% endif %}
       {% endif %}
     </div>
   </div>

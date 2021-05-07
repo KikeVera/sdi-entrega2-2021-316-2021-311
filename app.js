@@ -53,7 +53,11 @@ routerUsuarioSession.use(function(req, res, next) {
 //Aplicar routerUsuarioSession
 app.use("/ofertas/agregar",routerUsuarioSession);
 app.use("/ofertas/propias",routerUsuarioSession);
+app.use("/ofertas/compradas",routerUsuarioSession);
+app.use("/ofertas/tienda",routerUsuarioSession);
 app.use("/admin/users",routerUsuarioSession);
+app.use("/ofertas/comprar/",routerUsuarioSession);
+
 
 
 //routeradmin
@@ -79,11 +83,17 @@ routerEstandar.use(function(req, res, next) {
     if(req.session.usuario != null && req.session.usuario.rol == "estandar"){
         next();
     }else {
-        res.redirect("/ofertas/tienda?mensaje=Solo los usuarios pueden acceder a está dirección");
+        if(req.session.usuario != null && req.session.usuario.rol == "admin"){
+            res.redirect("/admin/users");
+        }else{
+            res.redirect("/ofertas/tienda?mensaje=Solo los usuarios pueden acceder a está dirección");
+        }
+
     }
 });
 
 app.use("/ofertas/agregar",routerEstandar);
+app.use("/ofertas/tienda",routerEstandar);
 app.use("/ofertas/propias",routerEstandar);
 
 
