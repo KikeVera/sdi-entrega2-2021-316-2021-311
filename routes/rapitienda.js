@@ -53,95 +53,42 @@ module.exports = function(app, gestorBD) {
         });
     });
 
-    app.post("/api/mensajes/enviar/:id/:receptor", function(req, res) {
 
-        let criterio = {
-            "idOferta": gestorBD.mongo.ObjectID(req.params.id),
-            $or: [{"emailInteresado": app.get("jwt").verify(req.headers.token, 'secreto').usuario,"emailPropietario":req.params.receptor  },
-                {"emailPropietario": app.get("jwt").verify(req.headers.token, 'secreto').usuario,"emailInteresado":req.params.receptor}]
-        };
-        console.log(criterio)
 
+    app.post("/api/mensajes/enviar/:id/:idConversacion?", function(req, res) {
 
         let criterioOferta = {"_id": gestorBD.mongo.ObjectID(req.params.id)};
 
-        gestorBD.obtenerConversaciones(criterio, function (conversaciones) {
-            console.log(conversaciones);
-            if (conversaciones == null) {
-                res.status(500);
-                res.json({
-                    error: "se ha producido un error"
-                })
-            } else {
-                gestorBD.obtenerOfertas(criterioOferta, function (ofertas) {
-                    if (ofertas == null) {
-                        res.status(500);
+
+
+            gestorBD.obtenerOfertas(criterioOferta,function(ofertas){
+                if ( ofertas == null ){
+                    res.status(500);
+                    res.json({
+                        error : "se ha producido un error"
+                    })
+                } else {
+                    if(ofertas.length===0){
+                        res.status(200);
                         res.json({
-                            error: "se ha producido un error"
+                            error: "No existen ofertas con este id"
                         })
-                    } else {
-                        if (conversaciones.length === 0) {
-                            if (ofertas[0].vendedor === app.get("jwt").verify(req.headers.token, 'secreto').usuario) {
+                    }
+                    else if (req.params.idConversacion === undefined) {
+                        if (ofertas[0].vendedor === app.get("jwt").verify(req.headers.token, 'secreto').usuario) {
 
-                                res.status(200);
-                                res.json({
-                                    error: "No se puede iniciar una conversación en tu propia oferta"
-                                })
-                            } else {
-                                let conversacion = {
-                                    idOferta: gestorBD.mongo.ObjectID(req.params.id),
-                                    emailInteresado: app.get("jwt").verify(req.headers.token, 'secreto').usuario,
-                                    emailPropietario: req.params.receptor,
-
-                                }
-                                gestorBD.insertarConversacion(conversacion, function (id) {
-                                    if (id == null) {
-                                        res.status(500);
-                                        res.json({
-                                            error: "se ha producido un error",
-
-                                        })
-                                    } else {
-                                        let mensaje = {
-                                            idConversacion: id,
-                                            autor: app.get("jwt").verify(req.headers.token, 'secreto').usuario,
-                                            texto: req.body.texto,
-                                            fecha: new Date(),
-                                            leido: false
-                                        }
-                                        gestorBD.insertarMensaje(mensaje, function (id) {
-                                            if (id == null) {
-                                                res.status(500);
-                                                res.json({
-                                                    error: "se ha producido un error",
-
-                                                })
-                                            } else {
-                                                res.status(201);
-                                                res.json({
-                                                    mensaje: "mensaje insertado",
-                                                    _id: id
-                                                })
-                                            }
-                                        });
-
-
-                                    }
-                                });
-
+                            res.status(200);
+                            res.json({
+                                error: "No se puede iniciar una conversación en tu propia oferta"
+                            })
+                        } else {
+                            let conversacion = {
+                                idOferta: gestorBD.mongo.ObjectID(req.params.id),
+                                emailInteresado: app.get("jwt").verify(req.headers.token, 'secreto').usuario,
+                                emailPropietario: ofertas[0].vendedor,
 
                             }
-                        }
-
-                        else{
-                            let mensaje = {
-                                idConversacion: conversaciones[0]._id,
-                                autor: app.get("jwt").verify(req.headers.token, 'secreto').usuario,
-                                texto: req.body.texto,
-                                fecha: new Date(),
-                                leido: false
-                            }
-                            gestorBD.insertarMensaje(mensaje, function (id) {
+                            gestorBD.insertarConversacion(conversacion, function (id) {
                                 if (id == null) {
                                     res.status(500);
                                     res.json({
@@ -149,26 +96,98 @@ module.exports = function(app, gestorBD) {
 
                                     })
                                 } else {
-                                    res.status(201);
-                                    res.json({
-                                        mensaje: "mensaje insertado",
-                                        _id: id
-                                    })
+                                    let mensaje = {
+                                        idConversacion: id,
+                                        autor: app.get("jwt").verify(req.headers.token, 'secreto').usuario,
+                                        texto: req.body.texto,
+                                        fecha: new Date(),
+                                        leido: false
+                                    }
+                                    gestorBD.insertarMensaje(mensaje, function (id) {
+                                        if (id == null) {
+                                            res.status(500);
+                                            res.json({
+                                                error: "se ha producido un error",
+
+                                            })
+                                        } else {
+                                            res.status(201);
+                                            res.json({
+                                                mensaje: "mensaje insertado",
+                                                _id: id
+                                            })
+                                        }
+                                    });
+
+
                                 }
                             });
 
                         }
+                    }
+
+                    else{
+                        let criterioConversacion = {"_id": gestorBD.mongo.ObjectID(req.params.idConversacion)};
+                        gestorBD.obtenerConversaciones(criterioConversacion,function(conversaciones){
+                            if ( conversaciones == null ){
+                                res.status(500);
+                                res.json({
+                                    error : "se ha producido un error"
+                                })
+                            } else {
+                                if(conversaciones.length===0){
+                                    res.status(200);
+                                    res.json({
+                                        error: "No existen conversaciones con este id"
+                                    })
+                                }
 
 
+                                else if(conversaciones[0].idOferta.toString()!==ofertas[0]._id.toString()){
+
+                                    res.status(200);
+                                    res.json({
+                                        error: "Esta coversación no pertenece a la oferta proporcionada"
+                                    })
+                                }
+                                else {
+                                    let mensaje = {
+                                        idConversacion: conversaciones[0]._id,
+                                        autor: app.get("jwt").verify(req.headers.token, 'secreto').usuario,
+                                        texto: req.body.texto,
+                                        fecha: new Date(),
+                                        leido: false
+                                    }
+                                    gestorBD.insertarMensaje(mensaje, function (id) {
+                                        if (id == null) {
+                                            res.status(500);
+                                            res.json({
+                                                error: "se ha producido un error",
+
+                                            })
+                                        } else {
+                                            res.status(201);
+                                            res.json({
+                                                mensaje: "mensaje insertado",
+                                                _id: id
+                                            })
+                                        }
+                                    });
+                                }
+
+                            }
+                        });
 
 
                     }
-                });
-            }
+                }
+            });
 
-        });
+
+
 
     });
+
 
     app.get("/api/mensajes/:id/:receptor", function(req, res) {
         console.log(app.get("jwt").verify(req.headers.token, 'secreto').usuario)
