@@ -115,7 +115,7 @@ module.exports = function(app,swig,gestorBD) {
                 res.redirect("/ofertas/tienda?tipoMensaje=alert-danger&mensaje=Error al intentar actualizar usuario");
             } else {
                 req.session.usuario.dinero = req.session.usuario.dinero - 20;
-                if(msg=""){
+                if(msg===""){
                     res.redirect('/ofertas/propias');
                 }else{
                     res.redirect('/ofertas/propias?tipoMensaje=alert-warning&mensaje=' + msg);
@@ -165,7 +165,7 @@ module.exports = function(app,swig,gestorBD) {
         let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
         gestorBD.obtenerOfertas(criterio, function(ofertas) {
             //Si no exite esa oferta o el usuario que quiere comprarla es el vendedor se devuelve un error
-            if (ofertas == null || ofertas[0].vendedor == req.session.usuario.email) {
+            if (ofertas == null || ofertas[0].vendedor === req.session.usuario.email) {
                 res.redirect("/ofertas/tienda?tipoMensaje=alert-danger&mensaje=Error al comprar la oferta");
             } else {
                 let oferta = ofertas[0];

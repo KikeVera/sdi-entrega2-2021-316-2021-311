@@ -19,7 +19,7 @@ module.exports = function(app,swig,gestorBD) {
     app.post("/admin/users/delete", function(req, res) {
 
 
-        var users=req.body.checkboxUser;
+        let users=req.body.checkboxUser;
         if(Array.isArray(users)){
             for(let i=0;i<users.length;i++) {
                 let criterio = {"email" : users[i] };
