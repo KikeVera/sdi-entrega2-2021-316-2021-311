@@ -53,7 +53,11 @@ routerUsuarioSession.use(function(req, res, next) {
 //Aplicar routerUsuarioSession
 app.use("/ofertas/agregar",routerUsuarioSession);
 app.use("/ofertas/propias",routerUsuarioSession);
+app.use("/ofertas/compradas",routerUsuarioSession);
+app.use("/ofertas/tienda",routerUsuarioSession);
 app.use("/admin/users",routerUsuarioSession);
+app.use("/ofertas/comprar/",routerUsuarioSession);
+
 
 
 //routeradmin
@@ -76,19 +80,20 @@ let routerEstandar = express.Router();
 routerEstandar.use(function(req, res, next) {
     console.log("routerAdmin");
 
+    if(req.session.usuario != null && req.session.usuario.rol == "estandar"){
+        next();
+    }else {
+        if(req.session.usuario != null && req.session.usuario.rol == "admin"){
+            res.redirect("/admin/users");
+        }else{
+            res.redirect("/ofertas/tienda?mensaje=Solo los usuarios pueden acceder a está dirección");
+        }
 
-    gestorBD.obtenerUsuarios(
-        {email: req.session.usuario }, function (usuarios) {
-            console.log(usuarios[0]);
-            if(usuarios[0].rol ==="estandar" ){
-                next();
-            } else {
-                res.redirect("/ofertas/tienda?mensaje=Solo los usuarios pueden acceder a está dirección");
-            }
-        })
+    }
 });
 
 app.use("/ofertas/agregar",routerEstandar);
+app.use("/ofertas/tienda",routerEstandar);
 app.use("/ofertas/propias",routerEstandar);
 
 // routerUsuarioToken

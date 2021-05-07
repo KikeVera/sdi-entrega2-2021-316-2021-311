@@ -6,25 +6,30 @@
     <div class="form-group">
         <label class="control-label col-sm-2" for="titulo">Titulo:</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" name="titulo"
+            <input type="text" class="form-control" id="titulo"  name="titulo"
                    placeholder="Titulo de la oferta" required="false" />
         </div>
     </div>
     <div class="form-group">
         <label class="control-label col-sm-2" for="detalles">Detalles:</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" name="detalles"
+            <input type="text" class="form-control" id="detalles" name="detalles"
                    placeholder="Detalles de la oferta" required="false" />
         </div>
     </div>
     <div class="form-group">
         <label class="control-label col-sm-2" for="precio">Precio (€):</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" name="precio" step="any"
+            <input type="number" class="form-control" id="precio" name="precio" step="any"
                    placeholder="2.50" required="true" />
         </div>
     </div>
-
+    <div class="form-group">
+        <label class="control-label col-sm-2" for="checkboxOutstanding">Destacar por 20€:</label>
+        <div class="col-sm-10">
+            <input type="checkbox" id = "checkboxOutstanding" name="checkboxOutstanding" value="{{ user.email }}" />
+        </div>
+    </div>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             <button type="submit" class="btn btn-primary">Agregar</button>

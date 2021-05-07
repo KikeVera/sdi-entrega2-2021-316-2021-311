@@ -1,7 +1,7 @@
 {% extends "base.html" %} {% block titulo %} Mis publicaciones {% endblock %} 
 
 {% block contenido_principal %}
-<h2>Mis ofertas</h2>
+<h2>Mis compras</h2>
 
 
 
@@ -12,7 +12,7 @@
 				<th>Titulo</th>
 				<th>Detalles</th>
 				<th>Precio</th>
-				<th class="col-md-1"></th>
+				<th>Vendedor</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -21,16 +21,7 @@
 				<td>{{ oferta.titulo }}</td>
 				<td>{{ oferta.detalles }}</td>
 				<td>{{ oferta.precio }}€</td>
-				<td>
-				{% if oferta.destacada %}
-					<span>Destacada</span>
-				{% else %}
-					<a href="/ofertas/destacar/{{ oferta._id.toString() }}">Normal/Destacar</a>
-				{% endif %}
-				</td>
-				<td>
-					<a href="/ofertas/eliminar/{{ oferta._id.toString() }}">Eliminar</a>
-			    </td>
+				<td>{{ oferta.vendedor}}</td>
 			</tr>
 		{% endfor %}
 		</tbody>

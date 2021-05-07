@@ -27,6 +27,7 @@
         <table class="table table-hover">
             <thead>
             <tr>
+                <th>Destacada</th>
                 <th>Titulo</th>
                 <th>Detalles</th>
                 <th>Fecha</th>
@@ -37,17 +38,22 @@
             </thead>
             <tbody>
             {% for oferta in ofertas %}
-            <tr>
+            {% if oferta.destacada %}
+                <tr style="background: lightgrey;">
+                    <td>Destacada</td>
+            {% else %}
+                <tr>
+                    <td>Normal</td>
+            {% endif %}
                 <td>{{ oferta.titulo }}</td>
                 <td>{{ oferta.detalles }}</td>
                 <td>{{ oferta.fecha.toLocaleDateString("es-ES")}}</td>
                 <td>{{ oferta.precio }}€</td>
-                {% if oferta.comprada %}
+                {% if oferta.comprada != null%}
                 <td>Comprada</td>
                 {% else %}
                 <td><a  href="/ofertas/comprar/{{oferta._id.toString()}}">Comprar</a></td>
                 {% endif %}
-
             </tr>
             {% endfor %}
             </tbody>
