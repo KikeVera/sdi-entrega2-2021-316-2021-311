@@ -72,6 +72,11 @@
 
 <div class="container">
 
+  <div class="errores"></div>
+  {% for error in mensajesError %}
+    <div class="alert alert-danger">{{error}}</div>
+  {% endfor %}
+
   <script>
     var mensaje = getUrlParameter('mensaje');
     var tipoMensaje = getUrlParameter('tipoMensaje');

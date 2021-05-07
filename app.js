@@ -65,7 +65,7 @@ let routerAdmin = express.Router();
 routerAdmin.use(function(req, res, next) {
     console.log("routerAdmin");
 
-    if(req.session.usuario.rol == "admin"){
+    if(req.session.usuario.rol === "admin"){
         next();
     }else {
         res.redirect("/ofertas/tienda?mensaje=Solo los administradores pueden acceder a esta dirección");
@@ -79,11 +79,10 @@ app.use("/admin/users",routerAdmin);
 let routerEstandar = express.Router();
 routerEstandar.use(function(req, res, next) {
     console.log("routerAdmin");
-
-    if(req.session.usuario != null && req.session.usuario.rol == "estandar"){
+    if(req.session.usuario != null && req.session.usuario.rol === "estandar"){
         next();
     }else {
-        if(req.session.usuario != null && req.session.usuario.rol == "admin"){
+        if(req.session.usuario != null && req.session.usuario.rol === "admin"){
             res.redirect("/admin/users");
         }else{
             res.redirect("/ofertas/tienda?mensaje=Solo los usuarios pueden acceder a está dirección");

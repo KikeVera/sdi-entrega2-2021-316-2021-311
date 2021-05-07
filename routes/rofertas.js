@@ -26,7 +26,6 @@ module.exports = function(app,swig,gestorBD) {
                         paginas.push(i);
                     }
                 }
-                console.log(ofertas);
                 let destacadas = [];
                 let noDestacasdas = [];
                 if(Array.isArray(ofertas)){
@@ -43,14 +42,10 @@ module.exports = function(app,swig,gestorBD) {
                     ofertas.push(noDestacasdas[i]);
                 }
 
-
-                let respuesta = swig.renderFile('views/btienda.html',
-                    {
-                        ofertas : ofertas,
-                        paginas : paginas,
-                        actual : pg,
-                        user : req.session.usuario,
-                    });
+                let respuesta = renderWithUsuerData('views/btienda.html',req.session,{
+                    ofertas : ofertas,
+                    paginas : paginas,
+                    actual : pg,});
                 res.send(respuesta);
             }
         });
@@ -58,19 +53,25 @@ module.exports = function(app,swig,gestorBD) {
 
 
     app.get("/ofertas/agregar", function(req, res) {
-        let respuesta = swig.renderFile('views/bagregar.html', {
-            user : req.session.usuario,
-        });
+        let respuesta = renderWithUsuerData('views/bagregar.html',req.session,{});
         res.send(respuesta);
     });
-
+    let mensajesError = [];
     app.post('/ofertas/agregar', function(req, res) {
-        console.log(req.body);
-        if(req.body.titulo.trim()===''||req.body.detalles.trim()===''){
-            res.redirect("/ofertas/agregar?mensaje=No puede haber campos vacíos");
+        if(req.body.titulo.trim()===''){
+            mensajesError.push("Error debe rellenar el campo de titulo");
+        }
+        if(req.body.detalles.trim()===''){
+            mensajesError.push("Error debe rellenar el campo de detalles");
         }
         if(req.body.precio<0){
-            res.redirect("/ofertas/agregar?mensaje=El precio no puede ser negativo");
+            mensajesError.push("El precio no puede ser negativo");
+
+        }
+        if(mensajesError.length>0){
+            let respuesta = renderWithUsuerData('views/bagregar.html',req.session,{mensajesError : mensajesError});
+            res.send(respuesta);
+            return;
         }
         let checkOutstanding =req.body.checkboxOutstanding;
         let outstanding = false;
@@ -94,10 +95,10 @@ module.exports = function(app,swig,gestorBD) {
         // Conectarse
         gestorBD.insertarOferta(oferta, function(id){
             if (id == null) {
-                res.redirect("/ofertas/agregar?mensaje=Error al dar de alta oferta");
+                res.redirect("/ofertas/agregar?tipoMensaje=alert-danger&mensaje=Error al dar de alta oferta");
             } else {
                 if(outstanding && req.session.dinero < 20){
-                    res.redirect("/ofertas/agregar?mensaje=No tiene suficiente dinero para destacar la oferta");
+                    res.redirect("/ofertas/agregar?tipoMensaje=alert-warning&mensaje=No tiene suficiente dinero para destacar la oferta");
                 }else{
                     cobrarDestacado(req,res,"");
                 }
@@ -106,19 +107,18 @@ module.exports = function(app,swig,gestorBD) {
     });
 
     function cobrarDestacado(req,res,msg){
-        let dinero = {
-            dinero : req.session.usuario.dinero - 20};
+        let dinero = {dinero : req.session.usuario.dinero - 20};
         let criterioUsuario = {"email" : req.session.usuario.email};
         //user.dinero = user.dinero-oferta.precio;
         gestorBD.modificarUsuario(criterioUsuario,dinero ,function(id){
             if (id == null) {
-                res.redirect("/ofertas/tienda?mensaje=Error al intentar actualizar usuario");
+                res.redirect("/ofertas/tienda?tipoMensaje=alert-danger&mensaje=Error al intentar actualizar usuario");
             } else {
                 req.session.usuario.dinero = req.session.usuario.dinero - 20;
                 if(msg=""){
                     res.redirect('/ofertas/propias');
                 }else{
-                    res.redirect('/ofertas/propias?mensaje=' + msg);
+                    res.redirect('/ofertas/propias?tipoMensaje=alert-warning&mensaje=' + msg);
                 }
             }
         });
@@ -128,13 +128,9 @@ module.exports = function(app,swig,gestorBD) {
         let criterio = { vendedor : req.session.usuario.email };
         gestorBD.obtenerOfertas(criterio, function(ofertas) {
             if (ofertas == null) {
-                res.redirect("/ofertas/agregar?mensaje=Error al obtener ofertas propias");
+                res.redirect("/ofertas/agregar?tipoMensaje=alert-danger&mensaje=Error al obtener ofertas propias");
             } else {
-                let respuesta = swig.renderFile('views/bofertaspropias.html',
-                    {
-                        ofertas : ofertas,
-                        user : req.session.usuario
-                    });
+                let respuesta = renderWithUsuerData('views/bofertaspropias.html',req.session,{ofertas: ofertas});
                 res.send(respuesta);
             }
         });
@@ -145,17 +141,17 @@ module.exports = function(app,swig,gestorBD) {
 
         gestorBD.obtenerOfertas(criterio, function(ofertas) {
             if (ofertas == null) {
-                res.redirect("/ofertas/propias?mensaje=Error al obtener oferta");
+                res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al obtener oferta");
             } else {
 
                 if(ofertas[0].vendedor!==req.session.usuario)
-                    res.redirect("/ofertas/tienda?mensaje=La oferta no te pertenece");
+                    res.redirect("/ofertas/tienda?tipoMensaje=alert-danger&mensaje=La oferta no le pertenece");
                 if(ofertas[0].comprada != null)
-                    res.redirect("/ofertas/tienda?mensaje=La oferta ya ha sido comprada");
+                    res.redirect("/ofertas/tienda?tipoMensaje=alert-danger&mensaje=La oferta ya ha sido comprada");
 
                 gestorBD.eliminarOferta(criterio,function(ofertas){
                     if ( ofertas == null ){
-                        res.redirect("/ofertas/propias?mensaje=Error al borrar oferta");
+                        res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al borrar oferta");
                     } else {
                         res.redirect("/ofertas/propias");
                     }
@@ -170,19 +166,19 @@ module.exports = function(app,swig,gestorBD) {
         gestorBD.obtenerOfertas(criterio, function(ofertas) {
             //Si no exite esa oferta o el usuario que quiere comprarla es el vendedor se devuelve un error
             if (ofertas == null || ofertas[0].vendedor == req.session.usuario.email) {
-                res.redirect("/ofertas/tienda?mensaje=Error al comprar la oferta");
+                res.redirect("/ofertas/tienda?tipoMensaje=alert-danger&mensaje=Error al comprar la oferta");
             } else {
                 let oferta = ofertas[0];
                 //Si el dinero del usuario se es inferior al precio de la oferta se advierte al usuario
                 if(oferta.precio > req.session.usuario.dinero){
-                    res.redirect("/ofertas/tienda?mensaje=No tienes suficiente dinero para realizar la compra");
+                    res.redirect("/ofertas/tienda?tipoMensaje=alert-warning&mensaje=No tienes suficiente dinero para realizar la compra");
                 }else{
                     //Se añade al usuario como comprador de la oferta
                     oferta.comprada = req.session.usuario.email;
                     gestorBD.modificarOferta(criterio,oferta, function(id){
                         if (id == null) {
                             //Falla la compra del producto
-                            res.redirect("/ofertas/tienda?mensaje=Error al comprar la oferta");
+                            res.redirect("/ofertas/tienda?tipoMensaje=alert-danger&mensaje=Error al comprar la oferta");
                         } else {
                             //Se asigno la compra al usuario, pero se debe actualizar el saldo del usuario
                             let dinero = {
@@ -195,9 +191,9 @@ module.exports = function(app,swig,gestorBD) {
                                     oferta.comprada = null;
                                     gestorBD.modificarOferta(criterio,oferta, function(id){
                                         if (id == null) {
-                                            res.redirect("/ofertas/tienda?mensaje=Error fatidico al realizar la compra de la oferta, porfavor, contacte con nosotros");
+                                            res.redirect("/ofertas/tienda?tipoMensaje=alert-danger&mensaje=Error fatidico al realizar la compra de la oferta, porfavor, contacte con nosotros");
                                         } else {
-                                            res.redirect("/ofertas/tienda?mensaje=Error al realizar la compra");
+                                            res.redirect("/ofertas/tienda?tipoMensaje=alert-danger&mensaje=Error al realizar la compra");
                                         }
                                     });
                                 } else {
@@ -216,31 +212,28 @@ module.exports = function(app,swig,gestorBD) {
         let criterio = { comprada : req.session.usuario.email };
         gestorBD.obtenerOfertas(criterio, function(ofertas) {
             if (ofertas == null) {
-                res.redirect("/ofertas/tienda?mensaje=Error al obtener ofertas compradas");
+                res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al obtener ofertas compradas");
             } else {
-                let respuesta = swig.renderFile('views/bofertascompradas.html',
-                    {
-                        ofertas : ofertas,
-                        user : req.session.usuario
-                    });
+                let respuesta = renderWithUsuerData('views/bofertascompradas.html',req.session,{ofertas : ofertas});
                 res.send(respuesta);
             }
         });
     });
     app.get("/ofertas/destacar/:id", function(req, res) {
-        let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
+        let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id),vendedor:req.session.usuario.email };
         if(req.session.usuario.dinero<20){
-            res.redirect("/ofertas/tienda?mensaje=No dispone de los 20€ para destacar la oferta");
+            res.redirect("/ofertas/propias?tipoMensaje=alert-warning&mensaje=No dispone de los 20€ para destacar la oferta");
+            return;
         }
         gestorBD.obtenerOfertas(criterio, function(ofertas) {
             if (ofertas == null) {
-                res.redirect("/ofertas/tienda?mensaje=Error al obtener la oferta a destacar");
+                res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al obtener la oferta a destacar");
             } else {
                 let oferta = ofertas[0];
                 oferta.destacada =true;
                 gestorBD.modificarOferta(criterio,oferta, function(modificadas) {
                     if (modificadas == null) {
-                        res.redirect("/ofertas/tienda?mensaje=Error al modificar la oferta a destacar");
+                        res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al modificar la oferta a destacar");
                     } else {
                         cobrarDestacado(req,res,"Su oferta ha sido destacada");
                     }
@@ -248,4 +241,11 @@ module.exports = function(app,swig,gestorBD) {
             }
         });
     });
+
+    function renderWithUsuerData(view,session,parametros){
+        parametros.user = ({email: session.usuario.email,
+                dinero: session.usuario.dinero,
+                rol : session.usuario.rol});
+        return swig.renderFile(view,parametros)
+    }
 };

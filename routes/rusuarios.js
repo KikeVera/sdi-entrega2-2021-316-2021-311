@@ -8,15 +8,28 @@ module.exports = function(app,swig,gestorBD) {
 
     app.post('/usuario/registrarse', function(req, res) {
 
-
-        if(req.body.email.trim()===''||req.body.name.trim()===''||req.body.surname.trim()===''||req.body.password.trim()===''){
-            res.redirect("/usuario/registrarse?mensaje=No puede haber campos vacíos");
+        let mensajesError = [];
+        if(req.body.email.trim()===''){
+            mensajesError.push("Error debe rellenar el campo de email");
         }
-
+        if(req.body.name.trim()===''){
+            mensajesError.push("Error debe rellenar el campo de nombre");
+        }
+        if(req.body.surname.trim()===''){
+            mensajesError.push("Error debe rellenar el campo de apellido");
+        }
+        if(req.body.password.trim()===''){
+            mensajesError.push("Error debe rellenar el campo de contraseña");
+        }
         if(req.body.password!==req.body.confirmPassword){
-            res.redirect("/usuario/registrarse?mensaje=Las contraseñas no coinciden ");
+            mensajesError.push("Las contraseñas no coinciden");
         }
-
+        if(mensajesError.length>0){
+            let respuesta = swig.renderFile('views/bregistro.html',
+                {mensajesError : mensajesError});
+            res.send(respuesta);
+            return;
+        }
         let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
             .update(req.body.password).digest('hex');
 
@@ -31,24 +44,22 @@ module.exports = function(app,swig,gestorBD) {
         let criterio =  { email: usuario.email};
         gestorBD.obtenerUsuarios(criterio,function (usuarios)
         {
-            if (usuarios == null || usuarios.length == 0) {
+            if (usuarios == null || usuarios.length === 0) {
                 gestorBD.insertarUsuario(usuario, function (id) {
                     if (id == null) {
-                        res.redirect("/usuario/registrarse?mensaje=Error al registrar usuario");
+                        res.redirect("/usuario/registrarse?tipoMensaje=alert-danger&mensaje=Error al registrar usuario");
                     } else {
                         res.redirect("/usuario/identificarse?mensaje=Nuevo usuario registrado");
                     }
                 });
             }else{
-                res.redirect("/usuario/registrarse?mensaje=Error ya existe un usuario con el email aportado");
+                res.redirect("/usuario/registrarse?tipoMensaje=alert-danger&mensaje=Error ya existe un usuario con el email aportado");
             }
         });
     });
 
     app.get("/usuario/identificarse", function(req, res) {
-        let respuesta = swig.renderFile('views/bidentificacion.html', {
-            user: req.session.usuario
-        });
+        let respuesta = swig.renderFile('views/bidentificacion.html', {});
         res.send(respuesta);
     });
 
@@ -62,14 +73,13 @@ module.exports = function(app,swig,gestorBD) {
         }
 
         gestorBD.obtenerUsuarios(criterio, function(usuarios) {
-            if (usuarios == null || usuarios.length == 0) {
+            if (usuarios == null || usuarios.length === 0) {
                 req.session.usuario = null;
-                res.redirect("/usuario/identificarse?mensaje=Email o constraseña incorrecta");
+                res.redirect("/usuario/identificarse?tipoMensaje=alert-danger&mensaje=Email o constraseña incorrecta");
             } else {
 
                 req.session.usuario = usuarios[0];
-                console.log(req.session.usuario);
-                if(usuarios[0].rol == "admin"){
+                if(usuarios[0].rol === "admin"){
                     res.redirect('/admin/users');
                 }else{
                     res.redirect('/ofertas/tienda');
@@ -82,8 +92,5 @@ module.exports = function(app,swig,gestorBD) {
     app.get('/usuario/desconectarse', function (req, res) {
         req.session.usuario = null;
         res.redirect('/usuario/identificarse');
-    })
-
-
-
+    });
 };

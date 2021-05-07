@@ -26,7 +26,7 @@ module.exports = function(app,swig,gestorBD) {
                 gestorBD.eliminarUsuario(criterio, function( users ) {
 
                     if ( users == null ){
-                        res.redirect("/admin/users?mensaje=Error al borrar usuarios");
+                        res.redirect("/admin/users?tipoMensaje=alert-danger&mensaje=Error al borrar usuarios");
                     }
 
                 });
@@ -38,7 +38,7 @@ module.exports = function(app,swig,gestorBD) {
             gestorBD.eliminarUsuario(criterio, function( users ) {
 
                 if ( users == null ){
-                    res.redirect("/admin/users?mensaje=Error al borrar usuarios");
+                    res.redirect("/admin/users?tipoMensaje=alert-danger&mensaje=Error al borrar usuarios");
                 }
 
             });
