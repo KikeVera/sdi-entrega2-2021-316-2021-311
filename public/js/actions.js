@@ -15,7 +15,8 @@ function desconectar(){
 }
 
 function mostrarConversacion(idOferta){
-    idOfertaSeleccionada=idOferta
+
+    Cookies.set('idOferta', idOferta);
     $( "#contenedor-principal" ).load( "../widget-conversacion.html");
 
 }

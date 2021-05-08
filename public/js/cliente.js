@@ -1,7 +1,7 @@
 let token;
 let URLbase = "https://localhost:8081/api";
 
-let idOfertaSeleccionada;
+
 
 token = Cookies.get('token');
 let url = new URL(window.location.href);
@@ -11,6 +11,10 @@ if ( w === "login"){
 }
 else if ( w === "ofertas"){
     $( "#contenedor-principal" ).load("widget-ofertas.html");
+}
+
+else if ( w === "conversacion"){
+    $( "#contenedor-principal" ).load("widget-conversacion.html");
 }
 
 else{

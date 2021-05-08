@@ -239,11 +239,12 @@ module.exports = function(app, gestorBD) {
 
     app.get("/api/conversaciones/:idOferta?", function(req, res) {
 
+        let criterioConversacionInteresado;
         if (req.params.idOferta === undefined) {
-            let criterioConversacionInteresado = {"emailInteresado": app.get("jwt").verify(req.headers.token, 'secreto').usuario};
+            criterioConversacionInteresado = {"emailInteresado": app.get("jwt").verify(req.headers.token, 'secreto').usuario};
         }
         else{
-            let criterioConversacionInteresado = {"emailInteresado": app.get("jwt").verify(req.headers.token, 'secreto').usuario,
+            criterioConversacionInteresado = {"emailInteresado": app.get("jwt").verify(req.headers.token, 'secreto').usuario,
                 "idOferta":req.params.idOferta};
         }
 
@@ -254,11 +255,12 @@ module.exports = function(app, gestorBD) {
                     error : "se ha producido un error"
                 })
             } else {
+                let criterioConversacionPropietario;
                 if (req.params.idOferta === undefined) {
-                    let criterioConversacionInteresado = {"emailPropietario": app.get("jwt").verify(req.headers.token, 'secreto').usuario};
+                    criterioConversacionPropietario = {"emailPropietario": app.get("jwt").verify(req.headers.token, 'secreto').usuario};
                 }
                 else{
-                    let criterioConversacionInteresado = {"emailPropietario": app.get("jwt").verify(req.headers.token, 'secreto').usuario,
+                    criterioConversacionPropietario = {"emailPropietario": app.get("jwt").verify(req.headers.token, 'secreto').usuario,
                         "idOferta":req.params.idOferta};
                 }
                 gestorBD.obtenerConversaciones(criterioConversacionPropietario,function(conversacionesPropietario){
@@ -270,11 +272,16 @@ module.exports = function(app, gestorBD) {
                     } else {
 
                         res.status(200);
+                        let conversaciones={
+                            "interesado":conversacionesInteresado,
+                            "propietario":conversacionesPropietario
 
-                        res.json({
-                            interesado : JSON.stringify(conversacionesInteresado),
-                            propietario : JSON.stringify(conversacionesPropietario)
-                        })
+                        }
+
+
+                            res.send(JSON.stringify(conversaciones));
+
+
 
 
                     }
