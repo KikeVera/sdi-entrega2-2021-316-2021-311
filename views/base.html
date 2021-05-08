@@ -50,17 +50,17 @@
 
       {% if user == null %}
       <ul class="nav navbar-nav navbar-right">
-	    <li><a href="/usuario/registrarse"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>
-        <li><a href="/usuario/identificarse"><span class="glyphicon glyphicon-log-in"></span> Identifícate</a></li>
+	    <li id="mSignup"><a href="/usuario/registrarse"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>
+        <li id="mLogin"><a href="/usuario/identificarse"><span class="glyphicon glyphicon-log-in"></span> Identifícate</a></li>
       </ul>
       {% else %}
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="/usuario/desconectarse"><span class="glyphicon glyphicon-log-out"></span> Desconectarse</a></li>
+        <li id="mLogout"><a href="/usuario/desconectarse"><span class="glyphicon glyphicon-log-out"></span> Desconectarse</a></li>
       </ul>
         {% if user.rol == "estandar" %}
           <ul style="color:grey; margin:5px;" class="nav navbar-list navbar-right">
-              <li>Usuario : {{user.email}}</li>
-              <li>Saldo : {{user.dinero}} €</li>
+              <li id="userEmail">Usuario : {{user.email}}</li>
+              <li id="userMoney">Saldo : {{user.dinero}} €</li>
           </ul>
         {% endif %}
       {% endif %}
