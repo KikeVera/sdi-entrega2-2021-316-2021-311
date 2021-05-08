@@ -55,9 +55,9 @@ module.exports = function(app, gestorBD) {
 
 
 
-    app.post("/api/mensajes/enviar/:id/:idConversacion?", function(req, res) {
+    app.post("/api/mensajes/enviar/:idOferta/:idConversacion?", function(req, res) {
 
-        let criterioOferta = {"_id": gestorBD.mongo.ObjectID(req.params.id)};
+        let criterioOferta = {"_id": gestorBD.mongo.ObjectID(req.params.idOferta)};
 
 
 
@@ -127,7 +127,9 @@ module.exports = function(app, gestorBD) {
                     }
 
                     else{
-                        let criterioConversacion = {"_id": gestorBD.mongo.ObjectID(req.params.idConversacion)};
+                        let criterioConversacion = {"_id": gestorBD.mongo.ObjectID(req.params.idConversacion), $or:
+                                [{"emailInteresado": app.get("jwt").verify(req.headers.token, 'secreto').usuario },
+                                {"emailPropietario":app.get("jwt").verify(req.headers.token, 'secreto').usuario}]};
                         gestorBD.obtenerConversaciones(criterioConversacion,function(conversaciones){
                             if ( conversaciones == null ){
                                 res.status(500);
@@ -138,7 +140,7 @@ module.exports = function(app, gestorBD) {
                                 if(conversaciones.length===0){
                                     res.status(200);
                                     res.json({
-                                        error: "No existen conversaciones con este id"
+                                        error: "No existen conversaciones tuyas con este id"
                                     })
                                 }
 
@@ -189,27 +191,68 @@ module.exports = function(app, gestorBD) {
     });
 
 
-    app.get("/api/mensajes/:id/:receptor", function(req, res) {
-        console.log(app.get("jwt").verify(req.headers.token, 'secreto').usuario)
+    app.get("/api/mensajes/:idConversacion", function(req, res) {
 
-        let criterio = {
-            "idOferta": gestorBD.mongo.ObjectID(req.params.id),
-            $or: [{"emailInteresado": app.get("jwt").verify(req.headers.token, 'secreto').usuario,"emailPropietario":req.params.receptor  },
-                {"emailPropietario": app.get("jwt").verify(req.headers.token, 'secreto').usuario,"emailInteresado":req.params.receptor}]
-        };
+        let criterioConversacion = {"_id": gestorBD.mongo.ObjectID(req.params.idConversacion), $or:
+                [{"emailInteresado": app.get("jwt").verify(req.headers.token, 'secreto').usuario },
+                    {"emailPropietario":app.get("jwt").verify(req.headers.token, 'secreto').usuario}]};
 
 
-        gestorBD.obtenerConversaciones(criterio,function(conversaciones){
-            if ( ofertas == null ){
+
+        gestorBD.obtenerConversaciones(criterioConversacion,function(conversaciones){
+            if ( conversaciones == null ){
                 res.status(500);
                 res.json({
                     error : "se ha producido un error"
                 })
             } else {
-                let criterioMensajes = {"idConversacion": ofertas[0]._id};
-                gestorBD.obtenerMensajes(criterioMensajes,function(mensajes){
+                if(conversaciones.length===0){
+                    res.status(200);
+                    res.json({
+                        error: "No existen conversaciones tuyas con este id"
+                    })
 
-                    if ( ofertas == null ){
+                }
+                else {
+                    let criterioMensajes = {"idConversacion": conversaciones[0]._id};
+                    gestorBD.obtenerMensajes(criterioMensajes, function (mensajes) {
+
+                        if (ofertas == null) {
+                            res.status(500);
+                            res.json({
+                                error: "se ha producido un error"
+                            })
+                        } else {
+
+                            res.status(200);
+                            res.send(JSON.stringify(mensajes));
+                        }
+                    });
+                }
+
+
+            }
+        });
+
+
+    });
+
+    app.get("/api/conversaciones", function(req, res) {
+
+        let criterioConversacionInteresado = {"emailInteresado": app.get("jwt").verify(req.headers.token, 'secreto').usuario};
+
+
+
+        gestorBD.obtenerConversaciones(criterioConversacionInteresado,function(conversacionesInteresado){
+            if ( conversacionesInteresado == null ){
+                res.status(500);
+                res.json({
+                    error : "se ha producido un error"
+                })
+            } else {
+                let criterioConversacionPropietario = {"emailPropietario": app.get("jwt").verify(req.headers.token, 'secreto').usuario};
+                gestorBD.obtenerConversaciones(criterioConversacionPropietario,function(conversacionesPropietario){
+                    if ( conversacionesPropietario == null ){
                         res.status(500);
                         res.json({
                             error : "se ha producido un error"
@@ -217,7 +260,56 @@ module.exports = function(app, gestorBD) {
                     } else {
 
                         res.status(200);
-                        res.send( JSON.stringify(mensajes));
+
+                        res.json({
+                            interesado : JSON.stringify(conversacionesInteresado),
+                            propietario : JSON.stringify(conversacionesPropietario)
+                        })
+
+
+                    }
+                });
+
+
+
+
+
+
+            }
+        });
+
+
+    });
+
+    app.delete("/api/conversaciones/:idConversacion", function(req, res) {
+        let criterioConversacion = {"_id": gestorBD.mongo.ObjectID(req.params.idConversacion), $or:
+                [{"emailInteresado": app.get("jwt").verify(req.headers.token, 'secreto').usuario },
+                    {"emailPropietario":app.get("jwt").verify(req.headers.token, 'secreto').usuario}]};
+
+
+        gestorBD.eliminarConversaciones(criterioConversacion,function(conversaciones){
+            if ( conversaciones == null ){
+
+                res.status(500);
+                res.json({
+                    error:"se ha producido un error"
+                })
+            } else {
+                let criterioMensajes = {"idConversacion":gestorBD.mongo.ObjectID(req.params.idConversacion)};
+                console.log(criterioMensajes);
+                gestorBD.eliminarMensajes(criterioMensajes,function(mensajes){
+                    if ( mensajes == null ){
+
+                        res.status(500);
+                        res.json({
+                            error:"se ha producido un error"
+                        })
+                    } else {
+
+
+                        res.status(200);
+                        res.send(JSON.stringify(conversaciones));
+
                     }
                 });
 
@@ -225,6 +317,91 @@ module.exports = function(app, gestorBD) {
             }
         });
     });
+
+    app.put("/api/mensajes/leer/:idMensaje", function(req, res) {
+
+
+
+
+        let criterioMensaje = {
+            "_id": gestorBD.mongo.ObjectID(req.params.idMensaje)
+
+        };
+        console.log(criterioMensaje);
+        gestorBD.obtenerMensajes(criterioMensaje,function(mensajes){
+            if ( mensajes == null ){
+                res.status(500);
+                res.json({
+                    error : "se ha producido un error"
+                })
+            } else {
+                if(mensajes.length>0) {
+                    let criterioConversacion = {
+                        "_id": mensajes[0].idConversacion, $or:
+                            [{"emailInteresado": app.get("jwt").verify(req.headers.token, 'secreto').usuario},
+                                {"emailPropietario": app.get("jwt").verify(req.headers.token, 'secreto').usuario}]
+                    };
+
+                    gestorBD.obtenerConversaciones(criterioConversacion, function (conversaciones) {
+                        if (conversaciones == null) {
+                            res.status(500);
+                            res.json({
+                                error: "se ha producido un error"
+                            })
+                        } else {
+                            if (conversaciones.length > 0 && mensajes[0].autor !== app.get("jwt").verify(req.headers.token, 'secreto').usuario) {
+                                let mensaje = {"leido": true};
+
+                                gestorBD.modificarMensaje(criterioMensaje, mensaje, function (result) {
+                                    if (result == null) {
+                                        res.status(500);
+                                        res.json({
+                                            error: "se ha producido un error"
+                                        })
+                                    } else {
+
+                                        res.status(200);
+                                        res.json({
+                                            mensaje: "mensaje leido",
+                                            _id: req.params.id
+                                        })
+                                    }
+                                });
+
+
+                            } else {
+
+                                res.status(200);
+                                res.json({
+                                    error: "No se puede marcar como leido este mensaje"
+                                })
+
+
+                            }
+
+
+                        }
+                    });
+
+
+                }
+
+                else{
+                    res.status(200);
+                    res.json({
+                        error: "El mensaje no existe"
+                    })
+                }
+            }
+        });
+
+
+
+
+    });
+
+
+
 
 
 
