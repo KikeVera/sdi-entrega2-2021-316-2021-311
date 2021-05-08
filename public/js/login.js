@@ -36,5 +36,4 @@ $("#boton-login").click(function (){
 if ( Cookies.get('token') != null ) {
     $("#contenedor-principal").load("widget-ofertas.html");
 
-
 }

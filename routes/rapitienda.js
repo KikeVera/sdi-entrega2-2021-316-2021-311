@@ -237,11 +237,15 @@ module.exports = function(app, gestorBD) {
 
     });
 
-    app.get("/api/conversaciones", function(req, res) {
+    app.get("/api/conversaciones/:idOferta?", function(req, res) {
 
-        let criterioConversacionInteresado = {"emailInteresado": app.get("jwt").verify(req.headers.token, 'secreto').usuario};
-
-
+        if (req.params.idOferta === undefined) {
+            let criterioConversacionInteresado = {"emailInteresado": app.get("jwt").verify(req.headers.token, 'secreto').usuario};
+        }
+        else{
+            let criterioConversacionInteresado = {"emailInteresado": app.get("jwt").verify(req.headers.token, 'secreto').usuario,
+                "idOferta":req.params.idOferta};
+        }
 
         gestorBD.obtenerConversaciones(criterioConversacionInteresado,function(conversacionesInteresado){
             if ( conversacionesInteresado == null ){
@@ -250,7 +254,13 @@ module.exports = function(app, gestorBD) {
                     error : "se ha producido un error"
                 })
             } else {
-                let criterioConversacionPropietario = {"emailPropietario": app.get("jwt").verify(req.headers.token, 'secreto').usuario};
+                if (req.params.idOferta === undefined) {
+                    let criterioConversacionInteresado = {"emailPropietario": app.get("jwt").verify(req.headers.token, 'secreto').usuario};
+                }
+                else{
+                    let criterioConversacionInteresado = {"emailPropietario": app.get("jwt").verify(req.headers.token, 'secreto').usuario,
+                        "idOferta":req.params.idOferta};
+                }
                 gestorBD.obtenerConversaciones(criterioConversacionPropietario,function(conversacionesPropietario){
                     if ( conversacionesPropietario == null ){
                         res.status(500);

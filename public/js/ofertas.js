@@ -26,6 +26,8 @@ function actualizarTabla(ofertasMostrar){
             "<td>"+ofertasMostrar[i].detalles+"</td>" +
             "<td>"+ofertasMostrar[i].precio+"</td>" +
             "<td>"+ofertasMostrar[i].vendedor+"</td>" +
+            "<td>"+ "<a onclick=mostrarConversacion('"+ofertasMostrar[i]._id+"')>Conversacion</a>"+ "</td>"+
+
 
             "</tr>" );
 

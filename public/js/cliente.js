@@ -1,7 +1,7 @@
 let token;
 let URLbase = "https://localhost:8081/api";
 
-
+let idOfertaSeleccionada;
 
 token = Cookies.get('token');
 let url = new URL(window.location.href);

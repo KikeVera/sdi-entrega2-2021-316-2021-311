@@ -13,3 +13,9 @@ function desconectar(){
     $( "#contenedor-principal" ).load( "../widget-login.html");
     updateNav();
 }
+
+function mostrarConversacion(idOferta){
+    idOfertaSeleccionada=idOferta
+    $( "#contenedor-principal" ).load( "../widget-conversacion.html");
+
+}
