@@ -1,4 +1,4 @@
-let idOfertaSeleccionada=Cookies.get('idOferta');
+ idOfertaSeleccionada=Cookies.get('idOferta');
 
 
 
@@ -11,7 +11,8 @@ else if( idOfertaSeleccionada==null){
 }
 
 else {
-    let idConversacion;
+    $("#mensajes").html("<p>No hay una conversación para esta oferta todavía</p>");
+
     function getConversacion() {
         $.ajax({
             url: URLbase + "/conversaciones/" + idOfertaSeleccionada,
@@ -19,13 +20,16 @@ else {
             headers: {"token": token},
             dataType: 'json',
             success: function (respuesta) {
-                console.log(respuesta);
+                console.log(idOfertaSeleccionada);
+                console.log(respuesta)
                 if(respuesta.interesado.length>0) {
                     idConversacion=respuesta.interesado[0]._id;
                     console.log(idConversacion);
+                    getMensajes();
                 }
-
-                getConversacion();
+                else {
+                    getConversacion();
+                }
 
             },
             error: function (error) {
@@ -42,13 +46,10 @@ else {
     getConversacion();
 
 
-/*
+
     function getMensajes() {
 
-        while(idConversacion===undefined){
-            $("#mensajes").html("<p>No hay una conversación para esta oferta todavía</p>");
 
-        }
         $("#mensajes").empty();
 
         $.ajax({
@@ -57,12 +58,13 @@ else {
             headers: {"token": token},
             dataType: 'json',
             success: function (respuesta) {
-                console.log(respuesta);
-                for(let element in respuesta){
-                    $("#mensajes").append("<p>"+element.texto+"</p>");
+                console.log(respuesta[0].texto);
+                for(let i=0;i<respuesta.length;i++){
+
+                    $("#mensajes").append("<p>"+respuesta[0].texto+"</p>");
                 }
 
-                getConversacion();
+                getMensajes();
 
 
             },
@@ -78,8 +80,8 @@ else {
         });
     }
 
-    getMensajes();
-*/
+
+
 
     $("#boton-send-message").click(function () {
 

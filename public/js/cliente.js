@@ -1,4 +1,6 @@
 let token;
+let idOfertaSeleccionada;
+let idConversacion;
 let URLbase = "https://localhost:8081/api";
 
 

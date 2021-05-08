@@ -56,7 +56,7 @@ module.exports = function(app, gestorBD) {
 
 
     app.post("/api/mensajes/enviar/:idOferta/:idConversacion?", function(req, res) {
-
+        console.log("ggg")
         let criterioOferta = {"_id": gestorBD.mongo.ObjectID(req.params.idOferta)};
 
 
@@ -217,7 +217,7 @@ module.exports = function(app, gestorBD) {
                     let criterioMensajes = {"idConversacion": conversaciones[0]._id};
                     gestorBD.obtenerMensajes(criterioMensajes, function (mensajes) {
 
-                        if (ofertas == null) {
+                        if (mensajes == null) {
                             res.status(500);
                             res.json({
                                 error: "se ha producido un error"
@@ -245,8 +245,10 @@ module.exports = function(app, gestorBD) {
         }
         else{
             criterioConversacionInteresado = {"emailInteresado": app.get("jwt").verify(req.headers.token, 'secreto').usuario,
-                "idOferta":req.params.idOferta};
+                "idOferta":gestorBD.mongo.ObjectID(req.params.idOferta)};
         }
+
+
 
         gestorBD.obtenerConversaciones(criterioConversacionInteresado,function(conversacionesInteresado){
             if ( conversacionesInteresado == null ){
@@ -255,13 +257,14 @@ module.exports = function(app, gestorBD) {
                     error : "se ha producido un error"
                 })
             } else {
+                console.log(conversacionesInteresado);
                 let criterioConversacionPropietario;
                 if (req.params.idOferta === undefined) {
                     criterioConversacionPropietario = {"emailPropietario": app.get("jwt").verify(req.headers.token, 'secreto').usuario};
                 }
                 else{
                     criterioConversacionPropietario = {"emailPropietario": app.get("jwt").verify(req.headers.token, 'secreto').usuario,
-                        "idOferta":req.params.idOferta};
+                        "idOferta":gestorBD.mongo.ObjectID(req.params.idOferta)};
                 }
                 gestorBD.obtenerConversaciones(criterioConversacionPropietario,function(conversacionesPropietario){
                     if ( conversacionesPropietario == null ){
