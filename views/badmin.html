@@ -18,10 +18,10 @@
         <tbody>
         {% for user in users %}
         <tr>
-            <td>{{ user.email }}</td>
+            <td id="email">{{ user.email }}</td>
             <td>{{ user.name }}</td>
             <td>{{ user.surname }}</td>
-            <td  ><input type="checkbox" name="checkboxUser" value="{{ user.email }}" /></td>
+            <td  id="checkBox"><input type="checkbox" name="checkboxUser" value="{{ user.email }}" /></td>
         </tr>
         {% endfor %}
         <button type="submit" id="btEliminar" class="btn btn-primary">Eliminar</button>

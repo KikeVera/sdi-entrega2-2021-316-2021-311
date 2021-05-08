@@ -18,18 +18,18 @@
 		<tbody>
 		{% for oferta in ofertas %}
 			<tr>
-				<td>{{ oferta.titulo }}</td>
+				<td id = "titulo">{{ oferta.titulo }}</td>
 				<td>{{ oferta.detalles }}</td>
 				<td>{{ oferta.precio }}€</td>
-				<td>
+				<td id = "destacada">
 				{% if oferta.destacada %}
 					<span>Destacada</span>
 				{% else %}
 					<a href="/ofertas/destacar/{{ oferta._id.toString() }}">Normal/Destacar</a>
 				{% endif %}
 				</td>
-				<td>
-					<a href="/ofertas/eliminar/{{ oferta._id.toString() }}">Eliminar</a>
+				<td id = "eliminarRef">
+					<a id = "eliminar" href="/ofertas/eliminar/{{ oferta._id.toString() }}">Eliminar</a>
 			    </td>
 			</tr>
 		{% endfor %}

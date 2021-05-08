@@ -56,8 +56,8 @@ module.exports = function(app,swig,gestorBD) {
         let respuesta = renderWithUsuerData('views/bagregar.html',req.session,{});
         res.send(respuesta);
     });
-    let mensajesError = [];
     app.post('/ofertas/agregar', function(req, res) {
+        let mensajesError = [];
         if(req.body.titulo.trim()===''){
             mensajesError.push("Error debe rellenar el campo de titulo");
         }
@@ -97,24 +97,28 @@ module.exports = function(app,swig,gestorBD) {
             if (id == null) {
                 res.redirect("/ofertas/agregar?tipoMensaje=alert-danger&mensaje=Error al dar de alta oferta");
             } else {
-                if(outstanding && req.session.dinero < 20){
+                if(outstanding && req.session.dinero < 20.0){
                     res.redirect("/ofertas/agregar?tipoMensaje=alert-warning&mensaje=No tiene suficiente dinero para destacar la oferta");
-                }else{
+                }else if (outstanding){
                     cobrarDestacado(req,res,"");
+                }else{
+                    res.redirect('/ofertas/propias');
                 }
             }
         });
     });
 
     function cobrarDestacado(req,res,msg){
-        let dinero = {dinero : req.session.usuario.dinero - 20};
+        req.session.usuario.dinero = req.session.usuario.dinero - 20.0;
+        let dinero = {dinero : req.session.usuario.dinero};
         let criterioUsuario = {"email" : req.session.usuario.email};
         //user.dinero = user.dinero-oferta.precio;
         gestorBD.modificarUsuario(criterioUsuario,dinero ,function(id){
             if (id == null) {
+                req.session.usuario.dinero = req.session.usuario.dinero + 20.0;
                 res.redirect("/ofertas/tienda?tipoMensaje=alert-danger&mensaje=Error al intentar actualizar usuario");
             } else {
-                req.session.usuario.dinero = req.session.usuario.dinero - 20;
+
                 if(msg===""){
                     res.redirect('/ofertas/propias');
                 }else{
@@ -144,10 +148,15 @@ module.exports = function(app,swig,gestorBD) {
                 res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al obtener oferta");
             } else {
 
-                if(ofertas[0].vendedor!==req.session.usuario)
+                if(ofertas[0].vendedor!==req.session.usuario.email){
                     res.redirect("/ofertas/tienda?tipoMensaje=alert-danger&mensaje=La oferta no le pertenece");
-                if(ofertas[0].comprada != null)
+                    return;
+                }
+                if(ofertas[0].comprada != null){
                     res.redirect("/ofertas/tienda?tipoMensaje=alert-danger&mensaje=La oferta ya ha sido comprada");
+                    return;
+                }
+
 
                 gestorBD.eliminarOferta(criterio,function(ofertas){
                     if ( ofertas == null ){
@@ -221,7 +230,7 @@ module.exports = function(app,swig,gestorBD) {
     });
     app.get("/ofertas/destacar/:id", function(req, res) {
         let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id),vendedor:req.session.usuario.email };
-        if(req.session.usuario.dinero<20){
+        if(req.session.usuario.dinero<20.0){
             res.redirect("/ofertas/propias?tipoMensaje=alert-warning&mensaje=No dispone de los 20€ para destacar la oferta");
             return;
         }
