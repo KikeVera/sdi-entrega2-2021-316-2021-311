@@ -64,6 +64,16 @@ module.exports = function(app,swig,gestorBD) {
     });
 
     app.post("/usuario/identificarse", function(req, res) {
+
+        if(req.body.email.trim() === ""){
+            res.redirect("/usuario/identificarse?tipoMensaje=alert-warning&mensaje=Rellene el campo email para continuar");
+            return;
+        }
+        if(req.body.password.trim() === ""){
+            res.redirect("/usuario/identificarse?tipoMensaje=alert-warning&mensaje=Rellene el campo password para continuar");
+            return;
+        }
+
         let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
             .update(req.body.password).digest('hex');
 
