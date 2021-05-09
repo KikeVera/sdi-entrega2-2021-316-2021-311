@@ -11,7 +11,10 @@ function cargarConversaciones(){
             obtenerOfertas(conversations);
         },
         error : function (error){
-            $( "#contenedor-principal" ).load("widget-login.html");
+            desconectar();
+            $("p").remove(".alert-danger");
+
+            $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
         }
     });
 }
@@ -27,7 +30,10 @@ function obtenerOfertas(conversaciones){
             mostrarConversaciones(sales,conversaciones);
         },
         error : function (error){
-            $( "#contenedor-principal" ).load("widget-login.html");
+            desconectar();
+            $("p").remove(".alert-danger");
+
+            $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
         }
     });
 }
@@ -77,7 +83,10 @@ function eliminarConversacion(id){
             $( "#"+id).remove();
         },
         error : function (error){
-            $( "#contenedor-principal" ).load("widget-login.html");
+            desconectar();
+            $("p").remove(".alert-danger");
+
+            $("#widget-login").prepend("<p class='alert alert-danger'>Error eliminando conversaciones, posiblemente su sesión este caducada</p>");
         }
     });
 }
@@ -100,7 +109,10 @@ function actualizarMensajesSinLeer(id){
             actualizarMensajesSinLeer(id);
         },
         error : function (error){
-            $( "#contenedor-principal" ).load("widget-login.html");
+            desconectar();
+            $("p").remove(".alert-danger");
+
+            $("#widget-login").prepend("<p class='alert alert-danger'>Error , posiblemente su sesión este caducada</p>");
         }
     });
 }

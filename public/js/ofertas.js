@@ -12,7 +12,10 @@ function cargarOfertas(){
             actualizarTabla(ofertas);
         },
         error : function (error){
-            $( "#contenedor-principal" ).load("widget-login.html");
+            desconectar();
+            $("p").remove(".alert-danger");
+
+            $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo ofertas, posiblemente su sesión este caducada</p>");
         }
     });
 }
