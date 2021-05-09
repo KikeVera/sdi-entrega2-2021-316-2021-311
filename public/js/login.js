@@ -1,4 +1,5 @@
 $("#boton-login").click(function (){
+
     $.ajax({
         url:URLbase+ "/autenticar",
         type:"POST",
@@ -13,6 +14,7 @@ $("#boton-login").click(function (){
             console.log(respuesta.token);
             token=respuesta.token;
             Cookies.set('token', respuesta.token);
+            Cookies.set('email', $("#email").val());
             $("#contenedor-principal").load("widget-ofertas.html");
             updateNav();
 

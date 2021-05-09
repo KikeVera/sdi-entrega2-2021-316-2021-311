@@ -10,6 +10,7 @@ function widgetOfertas(){
 function desconectar(){
     token=null;
     Cookies.remove('token');
+    Cookies.remove('email');
     $( "#contenedor-principal" ).load( "../widget-login.html");
     updateNav();
 }

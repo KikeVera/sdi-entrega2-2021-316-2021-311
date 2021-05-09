@@ -2,6 +2,7 @@
 
 
 
+
 if(Cookies.get('token') == null){
     $( "#contenedor-principal" ).load("widget-login.html");
 }
@@ -11,7 +12,7 @@ else if( idOfertaSeleccionada==null){
 }
 
 else {
-    $("#mensajes").html("<p>No hay una conversación para esta oferta todavía</p>");
+
 
     function getConversacion() {
         $.ajax({
@@ -50,7 +51,7 @@ else {
     function getMensajes() {
 
 
-        $("#mensajes").empty();
+        let conversacion="";
 
         $.ajax({
             url: URLbase + "/mensajes/"+idConversacion,
@@ -58,12 +59,26 @@ else {
             headers: {"token": token},
             dataType: 'json',
             success: function (respuesta) {
-                console.log(respuesta[0].texto);
+
                 for(let i=0;i<respuesta.length;i++){
 
-                    $("#mensajes").append("<p>"+respuesta[0].texto+"</p>");
+                    if( Cookies.get('email')===respuesta[i].autor)
+                         conversacion=conversacion+"<p class=\"propios\">"+respuesta[i].texto+"</p> \n";
+                    else {
+
+                        if(!respuesta[i].leido) {
+                            conversacion = conversacion + "<p class=\"ajenos\">" + respuesta[i].texto + "</p> \n";
+                            leeMensaje(respuesta[i]._id);
+                        }
+                        else
+                            conversacion = conversacion + "<p class=\"ajenos\">" + respuesta[i].texto + "<span class='leido'> ✔✔</span></p> \n";
+
+                    }
+
                 }
 
+
+                $("#mensajes").html(conversacion);
                 getMensajes();
 
 
@@ -73,6 +88,32 @@ else {
                 $("p").remove(".alert-danger");
 
                 $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo mensajes</p>");
+
+            },
+
+
+        });
+    }
+
+    function leeMensaje(idMensaje) {
+
+
+        $.ajax({
+            url: URLbase + "/mensajes/leer/"+idMensaje,
+            type: "PUT",
+            headers: {"token": token},
+            dataType: 'json',
+            success: function (respuesta) {
+
+                console.log(respuesta);
+
+
+            },
+
+            error: function (error) {
+                $("p").remove(".alert-danger");
+
+                $("#widget-login").prepend("<p class='alert alert-danger'>Error leyendo mensaje</p>");
 
             },
 
@@ -91,6 +132,7 @@ else {
             urlConcreta=urlConcreta+"/"+idConversacion;
 
          }
+        console.log(URLbase + "/mensajes/enviar"+urlConcreta);
         $.ajax({
             url: URLbase + "/mensajes/enviar"+urlConcreta,
             type: "POST",

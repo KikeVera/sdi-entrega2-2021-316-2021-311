@@ -1,0 +1,20 @@
+.propios{
+    font:  1.1em ARIAL, sans-serif;
+    text-align:left;
+    background-color: #ffffff;
+    color: #0000FF;
+    font-weight: bold;
+}
+
+.ajenos{
+    font:  1.1em ARIAL, sans-serif;
+    text-align:right;
+    background-color:#FFFFFF ;
+    color: #FF0000;
+    font-weight: bold;
+    margin-right:6%;
+}
+
+.leido{
+    color: GREEN;
+}
