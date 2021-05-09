@@ -257,4 +257,8 @@ module.exports = function(app,swig,gestorBD) {
                 rol : session.usuario.rol});
         return swig.renderFile(view,parametros)
     }
+
+    // app.get("/*", function(req, res) {
+    //     //res.redirect("/ofertas/tienda");
+    // });
 };
