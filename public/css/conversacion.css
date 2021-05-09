@@ -1,20 +1,32 @@
 .propios{
     font:  1.1em ARIAL, sans-serif;
-    text-align:left;
-    background-color: #ffffff;
-    color: #0000FF;
+    text-align:right;
+    background-color: #afffaa;
+    color: #000;
     font-weight: bold;
+    margin-right:6%;
+    margin-left: 40%;
+    padding: 10px;
+    border-radius: 50px 15px 50px;
 }
 
 .ajenos{
     font:  1.1em ARIAL, sans-serif;
-    text-align:right;
-    background-color:#FFFFFF ;
-    color: #FF0000;
+    text-align:left;
+    background-color:#dadada ;
+    color: #000;
     font-weight: bold;
-    margin-right:6%;
+    margin-left:6%;
+    margin-right: 40%;
+    padding: 10px;
+    border-radius: 50px 15px 50px;
 }
 
 .leido{
-    color: GREEN;
+    color: #00d5ff;
+    font-size: 9px;
+}
+.noleido{
+    color: #6b6b6b;
+    font-size: 9px;
 }

@@ -63,12 +63,18 @@ else {
 
                 for(let i=0;i<respuesta.length;i++){
 
-                    if( Cookies.get('email')===respuesta[i].autor)
-                         conversacion=conversacion+"<p class=\"propios\">"+respuesta[i].texto+"</p> \n";
+                    if( Cookies.get('email')===respuesta[i].autor){
+                        if(!respuesta[i].leido) {
+                            conversacion = conversacion + "<p class=\"propios\">" + respuesta[i].texto + "<span class='noleido'> ✔</span></p> \n";
+                        }
+                        else
+                            conversacion = conversacion + "<p class=\"propios\">" + respuesta[i].texto + "<span class='leido'> ✔✔</span></p> \n";
+                    }
+
                     else {
 
                         if(!respuesta[i].leido) {
-                            conversacion = conversacion + "<p class=\"ajenos\">" + respuesta[i].texto + "</p> \n";
+                            conversacion = conversacion + "<p class=\"ajenos\">" + respuesta[i].texto + "<span class='noleido'> ✔</span></p> \n";
                             leeMensaje(respuesta[i]._id);
                         }
                         else

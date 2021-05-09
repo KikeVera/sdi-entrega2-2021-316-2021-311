@@ -8,7 +8,7 @@ function widgetOfertas(){
 }
 
 function widgetConversaciones(){
-    $( "#contenedor-principal" ).load( "../widget-conversationList.html");
+    $( "#contenedor-principal" ).load("widget-conversationList.html");
 }
 
 function desconectar(){

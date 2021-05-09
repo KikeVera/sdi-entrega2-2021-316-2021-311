@@ -1,6 +1,4 @@
 
-let conversations;
-let sales;
 function cargarConversaciones(){
     $.ajax({
         url: URLbase + "/conversaciones",
@@ -9,7 +7,7 @@ function cargarConversaciones(){
         dataType: 'json',
         headers: { "token": token },
         success: function(respuesta) {
-            conversations = respuesta;
+            let conversations = respuesta;
             obtenerOfertas(conversations);
         },
         error : function (error){
@@ -25,7 +23,7 @@ function obtenerOfertas(conversaciones){
         dataType: 'json',
         headers: { "token": token },
         success: function(respuesta) {
-            sales = respuesta;
+            let sales = respuesta;
             mostrarConversaciones(sales,conversaciones);
         },
         error : function (error){
