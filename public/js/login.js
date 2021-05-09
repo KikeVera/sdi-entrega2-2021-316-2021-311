@@ -20,7 +20,8 @@ $("#boton-login").click(function (){
 
         },
 
-        error:function (error,response){
+        error:function (error){
+
             $("p").remove(".alert-danger");
             Cookies.remove('token');
             $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");

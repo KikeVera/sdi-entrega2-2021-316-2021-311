@@ -38,7 +38,11 @@ else {
                 desconectar();
                 $("p").remove(".alert-danger");
 
-                $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
+
+                if(error.status===403)
+                    $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
+                else
+                    $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
 
 
             },
@@ -97,7 +101,10 @@ else {
                 desconectar();
                 $("p").remove(".alert-danger");
 
-                $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo mensajes, posiblemente su sesión este caducada</p>");
+                if(error.status===403)
+                    $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
+                else
+                    $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
 
             },
 
@@ -124,7 +131,10 @@ else {
                 desconectar();
                 $("p").remove(".alert-danger");
 
-                $("#widget-login").prepend("<p class='alert alert-danger'>Error leyendo mensaje, posiblemente su sesión este caducada</p>");
+                if(error.status===403)
+                    $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
+                else
+                    $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
 
             },
 
@@ -164,7 +174,10 @@ else {
                 desconectar();
                 $("p").remove(".alert-danger");
 
-                $("#widget-login").prepend("<p class='alert alert-danger'>No se ha podido insertar el mensaje, posiblemente su sesión este caducada</p>");
+                if(error.status===403)
+                    $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
+                else
+                    $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
 
             },
 

@@ -60,7 +60,7 @@ module.exports = function(app, gestorBD) {
 
 
     app.get("/api/ofertas", function(req, res) {
-        console.log(app.get("jwt").verify(req.headers.token, 'secreto').usuario)
+
 
         let criterio = {
             vendedor:{ $ne:app.get("jwt").verify(req.headers.token, 'secreto').usuario}
@@ -83,7 +83,7 @@ module.exports = function(app, gestorBD) {
 
 
     app.post("/api/mensajes/enviar/:idOferta/:idConversacion?", function(req, res) {
-        console.log("ggg")
+
         let criterioOferta = {"_id": gestorBD.mongo.ObjectID(req.params.idOferta)};
 
 
@@ -96,7 +96,7 @@ module.exports = function(app, gestorBD) {
                     })
                 } else {
                     if(ofertas.length===0){
-                        res.status(200);
+                        res.status(400);
                         res.json({
                             error: "No existen ofertas con este id"
                         })
@@ -104,7 +104,7 @@ module.exports = function(app, gestorBD) {
                     else if (req.params.idConversacion === undefined) {
                         if (ofertas[0].vendedor === app.get("jwt").verify(req.headers.token, 'secreto').usuario) {
 
-                            res.status(200);
+                            res.status(400);
                             res.json({
                                 error: "No se puede iniciar una conversación en tu propia oferta"
                             })
@@ -117,7 +117,7 @@ module.exports = function(app, gestorBD) {
                             }
                             gestorBD.insertarConversacion(conversacion, function (id) {
                                 if (id == null) {
-                                    res.status(500);
+                                    res.status(400);
                                     res.json({
                                         error: "se ha producido un error",
 
@@ -132,7 +132,7 @@ module.exports = function(app, gestorBD) {
                                     }
                                     gestorBD.insertarMensaje(mensaje, function (id) {
                                         if (id == null) {
-                                            res.status(500);
+                                            res.status(400);
                                             res.json({
                                                 error: "se ha producido un error",
 
@@ -165,7 +165,7 @@ module.exports = function(app, gestorBD) {
                                 })
                             } else {
                                 if(conversaciones.length===0){
-                                    res.status(200);
+                                    res.status(400);
                                     res.json({
                                         error: "No existen conversaciones tuyas con este id"
                                     })
@@ -174,7 +174,7 @@ module.exports = function(app, gestorBD) {
 
                                 else if(conversaciones[0].idOferta.toString()!==ofertas[0]._id.toString()){
 
-                                    res.status(200);
+                                    res.status(400);
                                     res.json({
                                         error: "Esta coversación no pertenece a la oferta proporcionada"
                                     })
@@ -234,7 +234,7 @@ module.exports = function(app, gestorBD) {
                 })
             } else {
                 if(conversaciones.length===0){
-                    res.status(200);
+                    res.status(400);
                     res.json({
                         error: "No existen conversaciones tuyas con este id"
                     })
@@ -284,7 +284,7 @@ module.exports = function(app, gestorBD) {
                     error : "se ha producido un error"
                 })
             } else {
-                console.log(conversacionesInteresado);
+
                 let criterioConversacionPropietario;
                 if (req.params.idOferta === undefined) {
                     criterioConversacionPropietario = {"emailPropietario": app.get("jwt").verify(req.headers.token, 'secreto').usuario};
@@ -300,7 +300,7 @@ module.exports = function(app, gestorBD) {
                             error : "se ha producido un error"
                         })
                     } else {
-                        console.log(conversacionesPropietario);
+
                         res.status(200);
                         let conversaciones={
                             "interesado":conversacionesInteresado,
@@ -343,7 +343,7 @@ module.exports = function(app, gestorBD) {
                 })
             } else {
                 let criterioMensajes = {"idConversacion":gestorBD.mongo.ObjectID(req.params.idConversacion)};
-                console.log(criterioMensajes);
+
                 gestorBD.eliminarMensajes(criterioMensajes,function(mensajes){
                     if ( mensajes == null ){
 
@@ -374,7 +374,7 @@ module.exports = function(app, gestorBD) {
             "_id": gestorBD.mongo.ObjectID(req.params.idMensaje)
 
         };
-        console.log(criterioMensaje);
+
         gestorBD.obtenerMensajes(criterioMensaje,function(mensajes){
             if ( mensajes == null ){
                 res.status(500);

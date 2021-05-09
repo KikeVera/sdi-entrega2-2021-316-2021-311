@@ -15,7 +15,10 @@ function cargarOfertas(){
             desconectar();
             $("p").remove(".alert-danger");
 
-            $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo ofertas, posiblemente su sesión este caducada</p>");
+            if(error.status===403)
+                $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
+            else
+                $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
         }
     });
 }
