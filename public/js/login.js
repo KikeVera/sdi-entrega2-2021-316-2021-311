@@ -20,10 +20,10 @@ $("#boton-login").click(function (){
 
         },
 
-        error:function (error){
+        error:function (error,response){
             $("p").remove(".alert-danger");
             Cookies.remove('token');
-            $("#widget-login").prepend("<p class='alert alert-danger'>Usuario no encontrado</p>");
+            $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
 
         },
 

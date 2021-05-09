@@ -4,27 +4,54 @@ module.exports = function(app, gestorBD) {
 
     app.post("/api/autenticar", function(req, res) {
 
+
+        if(req.body.email==="" || req.body.password.trim()===""){
+            res.status(400);
+            res.json({
+                autenticado : false,
+                error:"No pueden existir campos vacíos"
+            })
+            return;
+        }
+
         let seguro=app.get("crypto").createHmac('sha256', app.get('clave')).update(req.body.password).digest('hex');
         let criterio = {
             email: req.body.email,
             password: seguro
         }
 
+        let criterioEmail = {
+            email: req.body.email
 
-        gestorBD.obtenerUsuarios(criterio, function(usuarios){
+        }
+
+
+        gestorBD.obtenerUsuarios(criterioEmail, function(usuarios){
             if (usuarios == null || usuarios.length===0) {
                 res.status(400);
                 res.json({
-                   autenticado : false
+                   autenticado : false,
+                    error:"El usuario no existe"
                 })
+
             } else {
-                let token = app.get('jwt').sign(
-                    {usuario: criterio.email , tiempo: Date.now()/1000},
-                    "secreto");
-                res.status(200);
-                res.json({
-                    autenticado: true,
-                    token : token
+                gestorBD.obtenerUsuarios(criterio, function(usuarios){
+                    if (usuarios == null || usuarios.length===0) {
+                        res.status(400);
+                        res.json({
+                            autenticado : false,
+                            error:"Contraseña no válida"
+                        })
+                    } else {
+                        let token = app.get('jwt').sign(
+                            {usuario: criterio.email , tiempo: Date.now()/1000},
+                            "secreto");
+                        res.status(200);
+                        res.json({
+                            autenticado: true,
+                            token : token
+                        });
+                    }
                 });
             }
         });
