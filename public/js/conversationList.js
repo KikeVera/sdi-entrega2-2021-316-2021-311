@@ -47,6 +47,7 @@ function mostrarConversaciones (ofertas,conversaciones){
 
     $( "#conversationList" ).empty(); // Vaciar la tabla
     for (let i = 0; i < conversaciones.interesado.length; i++) {
+        actualizarMensajesSinLeer(conversaciones.propietario[i]._id);
         $( "#conversationList" ).append(
             "<tr id="+conversaciones.interesado[i]._id+">"+
             "<td>"+conversaciones.interesado[i].emailPropietario+"</td>" +
@@ -58,15 +59,15 @@ function mostrarConversaciones (ofertas,conversaciones){
         actualizarMensajesSinLeer(conversaciones.interesado[i]._id);
     }
     for (let i = 0; i < conversaciones.propietario.length; i++) {
+        actualizarMensajesSinLeer(conversaciones.propietario[i]._id);
         $( "#conversationList" ).append(
             "<tr id="+conversaciones.propietario[i]._id+">"+
             "<td>"+conversaciones.propietario[i].emailInteresado+"</td>" +
-            "<td>"+obtenerTituloDeOferta(ofertas,conversaciones.propietario[i].idOferta)+"</td>" +
-            "<td id=\"numeroDeMensajesSinLeer"+conversaciones.propietario[i]._id+"\"></td>" +
+            "<td name=\"oferta\">"+obtenerTituloDeOferta(ofertas,conversaciones.propietario[i].idOferta)+"</td>" +
+            "<td name=\"numeroDeOfertas\" id=\"numeroDeMensajesSinLeer"+conversaciones.propietario[i]._id+"\"></td>" +
             "<td>"+ "<a onclick=mostrarConversacion('"+conversaciones.propietario[i].idOferta+"')>Conversar</a>"+ "</td>"+
             "<td>"+ "<a onclick=eliminarConversacion('"+conversaciones.propietario[i]._id+"')>Eliminar</a>"+ "</td>"+
             "</tr>" );
-        actualizarMensajesSinLeer(conversaciones.propietario[i]._id);
     }
 }
 
