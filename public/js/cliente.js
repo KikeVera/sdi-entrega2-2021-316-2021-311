@@ -42,7 +42,9 @@ function updateNav(){
     if ( token != null ) {
         $("#barra-menu").append(
             " <li id='mOfertas'><a onClick=widgetOfertas()> Ofertas</li>"
-
+        );
+        $("#barra-menu").append(
+            " <li id='mConversaciones'><a onClick=widgetConversaciones()> Mis conversaciones</li>"
         );
         $("#barra-menu-derecha").append(
             "<li id='mdesconectar'><a onclick=desconectar()><span class=\"glyphicon glyphicon-log-out\"></span> Desconectar</a></li>"

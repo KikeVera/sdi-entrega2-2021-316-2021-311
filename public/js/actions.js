@@ -7,6 +7,10 @@ function widgetOfertas(){
     $( "#contenedor-principal" ).load( "../widget-ofertas.html");
 }
 
+function widgetConversaciones(){
+    $( "#contenedor-principal" ).load( "../widget-conversationList.html");
+}
+
 function desconectar(){
     token=null;
     Cookies.remove('token');

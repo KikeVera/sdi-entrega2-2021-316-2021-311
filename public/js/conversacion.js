@@ -21,11 +21,12 @@ else {
             headers: {"token": token},
             dataType: 'json',
             success: function (respuesta) {
-                console.log(idOfertaSeleccionada);
-                console.log(respuesta)
                 if(respuesta.interesado.length>0) {
                     idConversacion=respuesta.interesado[0]._id;
-                    console.log(idConversacion);
+                    getMensajes();
+                }
+                else if(respuesta.propietario.length>0) {
+                    idConversacion=respuesta.propietario[0]._id;
                     getMensajes();
                 }
                 else {

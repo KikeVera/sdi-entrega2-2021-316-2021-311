@@ -273,7 +273,7 @@ module.exports = function(app, gestorBD) {
                             error : "se ha producido un error"
                         })
                     } else {
-
+                        console.log(conversacionesPropietario);
                         res.status(200);
                         let conversaciones={
                             "interesado":conversacionesInteresado,

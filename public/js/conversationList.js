@@ -94,7 +94,7 @@ function actualizarMensajesSinLeer(id){
         success: function(result) {
             let mensajesSinLeer=0
             for(let i = 0 ; i <result.length;i++){
-                if(!result[i].leido){
+                if(!result[i].leido && result[i].autor !== Cookies.get('email')){
                     mensajesSinLeer++;
                 }
             }
