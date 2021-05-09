@@ -18,6 +18,9 @@ else if ( w === "ofertas"){
 else if ( w === "conversacion"){
     $( "#contenedor-principal" ).load("widget-conversacion.html");
 }
+else if ( w === "conversationList"){
+    $( "#contenedor-principal" ).load("widget-conversationList.html");
+}
 
 else{
     if ( token != null ) {

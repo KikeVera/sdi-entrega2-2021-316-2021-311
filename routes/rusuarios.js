@@ -2,8 +2,12 @@ module.exports = function(app,swig,gestorBD) {
 
 
     app.get("/usuario/registrarse", function(req, res) {
-        let respuesta = swig.renderFile('views/bregistro.html', {});
-        res.send(respuesta);
+        if(req.session.usuario !=null){
+            res.redirect("/ofertas/tienda");
+        }else{
+            let respuesta = swig.renderFile('views/bregistro.html', {});
+            res.send(respuesta);
+        }
     });
 
     app.post('/usuario/registrarse', function(req, res) {
@@ -59,8 +63,12 @@ module.exports = function(app,swig,gestorBD) {
     });
 
     app.get("/usuario/identificarse", function(req, res) {
-        let respuesta = swig.renderFile('views/bidentificacion.html', {});
-        res.send(respuesta);
+        if(req.session.usuario !=null){
+            res.redirect("/ofertas/tienda");
+        }else{
+            let respuesta = swig.renderFile('views/bidentificacion.html', {});
+            res.send(respuesta);
+        }
     });
 
     app.post("/usuario/identificarse", function(req, res) {

@@ -422,7 +422,22 @@ module.exports = function(app, gestorBD) {
 
 
 
+    app.get("/api/allSales", function(req, res) {
+        let criterio = {};
 
+
+        gestorBD.obtenerOfertas(criterio,function(ofertas){
+            if ( ofertas == null ){
+                res.status(500);
+                res.json({
+                    error : "se ha producido un error"
+                })
+            } else {
+                res.status(200);
+                res.send( JSON.stringify(ofertas));
+            }
+        });
+    });
 
 
 
