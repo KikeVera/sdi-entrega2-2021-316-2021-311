@@ -1,7 +1,9 @@
 module.exports = function(app,swig,gestorBD) {
 
+    //Se muestra la vista de la tienda
     app.get("/ofertas/tienda", function(req, res) {
         let criterio;
+        //Si se busca por strings se añade al criterio sino se muestran solo las ofertas que no son del usuario
         if( req.query.busqueda != null ){
             criterio = { "titulo" : new RegExp(req.query.busqueda,'i'),
                         vendedor : {$ne: req.session.usuario.email}};
@@ -12,6 +14,7 @@ module.exports = function(app,swig,gestorBD) {
         if ( req.query.pg == null){
             pg = 1;
         }
+        //Se busca segun un criterio y por pagina las ofertas que no son del usaurio.
         gestorBD.obtenerOfertasPg(criterio, pg , function(ofertas, total ) {
             if (ofertas == null) {
                 res.redirect("/ofertas/tienda?mensaje=Error al listar");
@@ -26,21 +29,6 @@ module.exports = function(app,swig,gestorBD) {
                         paginas.push(i);
                     }
                 }
-                let destacadas = [];
-                let noDestacasdas = [];
-                if(Array.isArray(ofertas)){
-                    for(let i=0;i<ofertas.length;i++) {
-                        if(ofertas[i].destacada){
-                            destacadas.push(ofertas[i]);
-                        }else{
-                            noDestacasdas.push(ofertas[i]);
-                        }
-                    }
-                }
-                ofertas = destacadas;
-                for(let i=0;i<noDestacasdas.length;i++) {
-                    ofertas.push(noDestacasdas[i]);
-                }
 
                 let respuesta = renderWithUsuerData('views/btienda.html',req.session,{
                     ofertas : ofertas,
@@ -51,28 +39,33 @@ module.exports = function(app,swig,gestorBD) {
         });
     });
 
-
+    //Muestra la vista para agregar una oferta
     app.get("/ofertas/agregar", function(req, res) {
         let respuesta = renderWithUsuerData('views/bagregar.html',req.session,{});
         res.send(respuesta);
     });
     app.post('/ofertas/agregar', function(req, res) {
         let mensajesError = [];
+        //Se guarda un error si el campo esta vacio
         if(req.body.titulo.trim()===''){
             mensajesError.push("Error debe rellenar el campo de titulo");
         }
+        //Se guarda un error si el campo esta vacio
         if(req.body.detalles.trim()===''){
             mensajesError.push("Error debe rellenar el campo de detalles");
         }
+        //Se guarda un error si el precio es menor a cero
         if(req.body.precio<0){
             mensajesError.push("El precio no puede ser negativo");
 
         }
+        //Si existen errores se devuelve a la vista los mensajes de error
         if(mensajesError.length>0){
             let respuesta = renderWithUsuerData('views/bagregar.html',req.session,{mensajesError : mensajesError});
             res.send(respuesta);
             return;
         }
+        //Si la checkbox esta activa se le cambia el valor a destacada a true
         let checkOutstanding =req.body.checkboxOutstanding;
         let outstanding = false;
         if(Array.isArray(checkOutstanding)){
@@ -92,7 +85,7 @@ module.exports = function(app,swig,gestorBD) {
             destacada : outstanding,
         }
 
-        // Conectarse
+        // Inserta en la base de datos la oferta
         gestorBD.insertarOferta(oferta, function(id){
             if (id == null) {
                 res.redirect("/ofertas/agregar?tipoMensaje=alert-danger&mensaje=Error al dar de alta oferta");
@@ -100,6 +93,7 @@ module.exports = function(app,swig,gestorBD) {
                 if(outstanding && req.session.dinero < 20.0){
                     res.redirect("/ofertas/agregar?tipoMensaje=alert-warning&mensaje=No tiene suficiente dinero para destacar la oferta");
                 }else if (outstanding){
+                    //Si fue destacada se le cobra al usuario
                     cobrarDestacado(req,res,"");
                 }else{
                     res.redirect('/ofertas/propias');
@@ -108,11 +102,11 @@ module.exports = function(app,swig,gestorBD) {
         });
     });
 
+    //Cobrar al usuario 20 euros
     function cobrarDestacado(req,res,msg){
         req.session.usuario.dinero = req.session.usuario.dinero - 20.0;
         let dinero = {dinero : req.session.usuario.dinero};
         let criterioUsuario = {"email" : req.session.usuario.email};
-        //user.dinero = user.dinero-oferta.precio;
         gestorBD.modificarUsuario(criterioUsuario,dinero ,function(id){
             if (id == null) {
                 req.session.usuario.dinero = req.session.usuario.dinero + 20.0;
@@ -127,7 +121,7 @@ module.exports = function(app,swig,gestorBD) {
             }
         });
     }
-
+    //Muestra la vista de ofertas propias con todas las ofertas del usaurio loggueado
     app.get("/ofertas/propias", function(req, res) {
         let criterio = { vendedor : req.session.usuario.email };
         gestorBD.obtenerOfertas(criterio, function(ofertas) {
@@ -140,6 +134,7 @@ module.exports = function(app,swig,gestorBD) {
         });
     });
 
+    //Elimina una oferta seleccionada si el usuasrio loggeado es el propietario
     app.get('/ofertas/eliminar/:id', function (req, res) {
         let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
 
@@ -147,7 +142,7 @@ module.exports = function(app,swig,gestorBD) {
             if (ofertas == null) {
                 res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al obtener oferta");
             } else {
-
+                //Se compruenba que el usaurio que intenta borrar la oferta es el propietario
                 if(ofertas[0].vendedor!==req.session.usuario.email){
                     res.redirect("/ofertas/tienda?tipoMensaje=alert-danger&mensaje=La oferta no le pertenece");
                     return;
@@ -157,7 +152,7 @@ module.exports = function(app,swig,gestorBD) {
                     return;
                 }
 
-
+                //Se elimina la oferta
                 gestorBD.eliminarOferta(criterio,function(ofertas){
                     if ( ofertas == null ){
                         res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al borrar oferta");
@@ -169,6 +164,7 @@ module.exports = function(app,swig,gestorBD) {
         });
     })
 
+    //Se realiza la compra de una oferta
     app.get("/ofertas/comprar/:id", function(req, res) {
         //Compra que se va a realizar
         let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
@@ -217,6 +213,7 @@ module.exports = function(app,swig,gestorBD) {
         });
     });
 
+    //Se muestra la vista de las ofertas compradas por el usuario loggeado
     app.get("/ofertas/compradas", function(req, res) {
         let criterio = { comprada : req.session.usuario.email };
         gestorBD.obtenerOfertas(criterio, function(ofertas) {
@@ -228,18 +225,22 @@ module.exports = function(app,swig,gestorBD) {
             }
         });
     });
+    //Se destaca una oferta
     app.get("/ofertas/destacar/:id", function(req, res) {
         let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id),vendedor:req.session.usuario.email };
+        //Se comprueba que el saldo del usuario es mayor a 20
         if(req.session.usuario.dinero<20.0){
             res.redirect("/ofertas/propias?tipoMensaje=alert-warning&mensaje=No dispone de los 20€ para destacar la oferta");
             return;
         }
+        //Se obtiene la oferta a modificar
         gestorBD.obtenerOfertas(criterio, function(ofertas) {
             if (ofertas == null) {
                 res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al obtener la oferta a destacar");
             } else {
                 let oferta = ofertas[0];
                 oferta.destacada =true;
+                //Se modifica la oferta
                 gestorBD.modificarOferta(criterio,oferta, function(modificadas) {
                     if (modificadas == null) {
                         res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al modificar la oferta a destacar");
@@ -250,15 +251,11 @@ module.exports = function(app,swig,gestorBD) {
             }
         });
     });
-
+    //Realiza un render con los datos del usuario y otros parametros
     function renderWithUsuerData(view,session,parametros){
         parametros.user = ({email: session.usuario.email,
                 dinero: session.usuario.dinero,
                 rol : session.usuario.rol});
         return swig.renderFile(view,parametros)
     }
-
-    // app.get("/*", function(req, res) {
-    //     //res.redirect("/ofertas/tienda");
-    // });
 };

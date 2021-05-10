@@ -1,6 +1,6 @@
 module.exports = function(app,swig,gestorBD) {
 
-
+    //Se muestra la vista del registro si el usuario no esta loggeado
     app.get("/usuario/registrarse", function(req, res) {
         if(req.session.usuario !=null){
             res.redirect("/ofertas/tienda");
@@ -10,9 +10,11 @@ module.exports = function(app,swig,gestorBD) {
         }
     });
 
+    //Se realiza un registro
     app.post('/usuario/registrarse', function(req, res) {
 
         let mensajesError = [];
+        //Se comprueba que los campos no esten vacios
         if(req.body.email.trim()===''){
             mensajesError.push("Error debe rellenar el campo de email");
         }
@@ -25,15 +27,18 @@ module.exports = function(app,swig,gestorBD) {
         if(req.body.password.trim()===''){
             mensajesError.push("Error debe rellenar el campo de contraseña");
         }
+        //Se comprueba que el segundo password sea el mismo en los dos campos
         if(req.body.password!==req.body.confirmPassword){
             mensajesError.push("Las contraseñas no coinciden");
         }
+        //Si existieron errores los muestra y no se realiza el registro
         if(mensajesError.length>0){
             let respuesta = swig.renderFile('views/bregistro.html',
                 {mensajesError : mensajesError});
             res.send(respuesta);
             return;
         }
+        //Se encripta la contraseña
         let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
             .update(req.body.password).digest('hex');
 
@@ -46,9 +51,11 @@ module.exports = function(app,swig,gestorBD) {
             dinero : 100
         }
         let criterio =  { email: usuario.email};
+        //Se comprueba que no exista un usaurio con el mismo email
         gestorBD.obtenerUsuarios(criterio,function (usuarios)
         {
             if (usuarios == null || usuarios.length === 0) {
+                //Se realiza el regisrtro
                 gestorBD.insertarUsuario(usuario, function (id) {
                     if (id == null) {
                         res.redirect("/usuario/registrarse?tipoMensaje=alert-danger&mensaje=Error al registrar usuario");
@@ -62,6 +69,7 @@ module.exports = function(app,swig,gestorBD) {
         });
     });
 
+    //Se muestra la vista de identificacion si el usuario no esta loggeado
     app.get("/usuario/identificarse", function(req, res) {
         if(req.session.usuario !=null){
             res.redirect("/ofertas/tienda");
@@ -71,8 +79,10 @@ module.exports = function(app,swig,gestorBD) {
         }
     });
 
+    //Se realiza la indetificacion del usaurio
     app.post("/usuario/identificarse", function(req, res) {
 
+        //Se mira que no existan campos vacios
         if(req.body.email.trim() === ""){
             res.redirect("/usuario/identificarse?tipoMensaje=alert-warning&mensaje=Rellene el campo email para continuar");
             return;
@@ -81,7 +91,7 @@ module.exports = function(app,swig,gestorBD) {
             res.redirect("/usuario/identificarse?tipoMensaje=alert-warning&mensaje=Rellene el campo password para continuar");
             return;
         }
-
+        //Se encripta la contraseña
         let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
             .update(req.body.password).digest('hex');
 
@@ -90,6 +100,7 @@ module.exports = function(app,swig,gestorBD) {
             password : seguro
         }
 
+        //Se busaca el usuario y se guarda en session
         gestorBD.obtenerUsuarios(criterio, function(usuarios) {
             if (usuarios == null || usuarios.length === 0) {
                 req.session.usuario = null;
@@ -97,6 +108,7 @@ module.exports = function(app,swig,gestorBD) {
             } else {
 
                 req.session.usuario = usuarios[0];
+                //Si es administrador se redirige a la vista de admin sino a la de usaurios
                 if(usuarios[0].rol === "admin"){
                     res.redirect('/admin/users');
                 }else{
@@ -107,6 +119,7 @@ module.exports = function(app,swig,gestorBD) {
         });
     });
 
+    //Se desconecta el usuario loggeado
     app.get('/usuario/desconectarse', function (req, res) {
         req.session.usuario = null;
         res.redirect('/usuario/identificarse');
