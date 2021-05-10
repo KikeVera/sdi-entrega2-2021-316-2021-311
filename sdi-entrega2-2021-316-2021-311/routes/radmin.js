@@ -2,6 +2,7 @@ module.exports = function(app,swig,gestorBD) {
 
 
     app.get("/admin/users", function(req, res) {
+        app.get("logger").info("Accediendo a la lista de usuarios");
         //Busca en la base de datos todos los usuarios diferentes al usuario administrador
         let criterio = {rol:{$ne: 'admin'}}
         gestorBD.obtenerUsuarios(criterio, function( allUsers ) {
@@ -54,18 +55,21 @@ module.exports = function(app,swig,gestorBD) {
                     //Elimina las ofertas del usuario  que no esten comprada
                     gestorBD.eliminarOferta(criterio,function (oferta){
                        if(oferta == null){
+                           app.get("logger").fatal("Error al borrar ofertas");
                            res.redirect("/admin/users?tipoMensaje=alert-danger&mensaje=Error al borrar las ofertas del usuario");
                        }else{
                            criterio = {emailInteresado: listaDeEmails[0]}
                            //Elimina las conversaciones donde el usaurio es el interesado
                            gestorBD.eliminarConversaciones(criterio,function (conversacion) {
                                if(conversacion===null){
+                                   app.get("logger").fatal("Error al borrar conversaciones");
                                    res.redirect("/admin/users?tipoMensaje=alert-danger&mensaje=Error al borrar las conversaciones del usuario");
                                }else{
                                    criterio = {emailPropietario: listaDeEmails[0]}
                                    //Elimina las conversaciones donde el usaurio es el propietario
                                    gestorBD.eliminarConversaciones(criterio,function (conversacion) {
                                        if(conversacion===null){
+                                           app.get("logger").fatal("Error al borrar conversaciones");
                                            res.redirect("/admin/users?tipoMensaje=alert-danger&mensaje=Error al borrar las conversaciones del usuario");
                                        }else{
                                            recursiveDelete(listaDeEmails.pop());

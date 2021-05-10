@@ -118,6 +118,7 @@ module.exports = function(app,swig,gestorBD) {
         let criterioUsuario = {"email" : req.session.usuario.email};
         gestorBD.modificarUsuario(criterioUsuario,dinero ,function(id){
             if (id == null) {
+                app.get("logger").fatal("Error al intentar actualizar usuario");
                 req.session.usuario.dinero = req.session.usuario.dinero + 20.0;
                 res.redirect("/ofertas/tienda?tipoMensaje=alert-danger&mensaje=Error al intentar actualizar usuario");
             } else {
