@@ -1,7 +1,7 @@
 module.exports = function(app,swig,gestorBD) {
 
     app.get("/ofertas/tienda", function(req, res) {
-        let criterio = {};
+        let criterio;
         if( req.query.busqueda != null ){
             criterio = { "titulo" : new RegExp(req.query.busqueda,'i'),
                         vendedor : {$ne: req.session.usuario.email}};

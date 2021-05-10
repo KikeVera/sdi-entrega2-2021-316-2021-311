@@ -35,7 +35,7 @@ app.use(expressSession({
 }));
 
 // routerUsuarioSession
-var routerUsuarioSession = express.Router();
+let routerUsuarioSession = express.Router();
 routerUsuarioSession.use(function(req, res, next) {
     console.log("routerUsuarioSession");
     if ( req.session.usuario ) {

@@ -56,7 +56,7 @@ function obtenerOfertas(conversaciones){
 function mostrarConversaciones (ofertas,conversaciones){
 
 
-    var list=$( "#conversationList" );
+    let list=$( "#conversationList" );
     list.empty(); // Vaciar la tabla
     //Recorremos todas las conversaciones de interesado
     for (let i = 0; i < conversaciones.interesado.length; i++) {

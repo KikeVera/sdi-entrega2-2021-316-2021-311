@@ -1,5 +1,5 @@
 
-var ofertas;
+let ofertas;
 //Función para obtener las ofertas de la API
 function cargarOfertas(){
     $.ajax({
@@ -30,10 +30,10 @@ function cargarOfertas(){
 //Función para actualizar la tabla
 function actualizarTabla(ofertasMostrar){
 
-    var cuerpo=$( "#tablaCuerpo" );
+    let cuerpo=$( "#tablaCuerpo" );
     cuerpo.empty(); // Vaciar la tabla
     //Recorremos todas las ofertas
-    for (i = 0; i < ofertasMostrar.length; i++) {
+    for (let i = 0; i < ofertasMostrar.length; i++) {
         //Para cada una mostramos todos sus datos en distintas columnas
         cuerpo.append(
             "<tr id="+ofertasMostrar[i]._id+">"+

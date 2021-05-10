@@ -43,8 +43,8 @@ updateNav();
 
 //Función para actualizar la barra de navegación
 function updateNav(){
-    var izq= $("#barra-menu");
-    var der= $("#barra-menu-derecha");
+    let izq= $("#barra-menu");
+    let der= $("#barra-menu-derecha");
     //Se limpian el html de las dos secciones de la barra
 
    izq.empty();
