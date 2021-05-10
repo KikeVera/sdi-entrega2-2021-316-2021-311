@@ -71,12 +71,11 @@ module.exports = {
             } else {
                 let collection = db.collection('ofertas');
                 collection.count(function(err, count){
-                    collection.find(criterio).sort({"destacada":-1}).skip( (pg-1)*5 ).limit( 5 )
-                        .toArray(function(err, canciones) {
+                    collection.find(criterio).sort({"destacada":-1}).toArray(function(err, ofertas) {
                             if (err) {
                                 funcionCallback(null);
                             } else {
-                                funcionCallback(canciones, count);
+                                funcionCallback(ofertas.slice((pg-1)*5,((pg-1)*5)+5), count);
                             }
                             db.close();
                         });

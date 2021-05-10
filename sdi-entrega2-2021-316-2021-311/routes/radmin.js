@@ -30,17 +30,19 @@ module.exports = function(app,swig,gestorBD) {
             }
             //Borra todos los usuarios de la lista recursivamente
             recursiveDelete(res,emails);
+            res.redirect("/admin/users")
         }
         else if(users!==undefined){
             //Borra el usaurio dado de la base de datos con su informacion relacionada
             emails.push(users);
             recursiveDelete(res,emails);
+            res.redirect("/admin/users")
         }
     });
 
     function recursiveDelete(res,listaDeEmails){
-        if(listaDeEmails.size() === 0){
-            res.redirect("/admin/users");
+        if(listaDeEmails === undefined || listaDeEmails.length === 0){
+            return;
         }else{
             //Elimina el usuario de la base de datos
             let criterio = {"email" : listaDeEmails[0] };
@@ -50,9 +52,8 @@ module.exports = function(app,swig,gestorBD) {
                     app.get("logger").fatal("Error al borrar usuarios");
                     res.redirect("/admin/users?tipoMensaje=alert-danger&mensaje=Error al borrar usuarios");
                 }else{
-                    criterio = {vendedor:listaDeEmails[0],
-                                comprada: null}
-                    //Elimina las ofertas del usuario  que no esten comprada
+                    criterio = {vendedor:listaDeEmails[0]}
+                    //Elimina las ofertas del usuario
                     gestorBD.eliminarOferta(criterio,function (oferta){
                        if(oferta == null){
                            app.get("logger").fatal("Error al borrar ofertas");
