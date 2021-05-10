@@ -116,9 +116,11 @@ public class SdiEntrega2Tests {
 		//Comprobamos que seguimos en la vista de registro
 		SeleniumUtils.textoPresentePagina(driver,"Registrar usuario");
 		// Comprobamos que nos salen los avisos de campos vacios
-		PO_RegisterView.checkKey(driver, "usuarioAutenticado.error.emptyEmail", PO_Properties.getSPANISH());	
-		PO_RegisterView.checkKey(driver, "usuarioAutenticado.error.emptyName", PO_Properties.getSPANISH());
-		PO_RegisterView.checkKey(driver, "usuarioAutenticado.error.emptySurname", PO_Properties.getSPANISH());
+		
+		
+		SeleniumUtils.textoPresentePagina(driver,"Error, debe rellenar el campo de email");
+		SeleniumUtils.textoPresentePagina(driver,"Error, debe rellenar el campo de nombre");
+		SeleniumUtils.textoPresentePagina(driver,"Error, debe rellenar el campo de apellido");
 	}
 
 	//PR03. Registro de Usuario con datos inválidos (repetición de contraseña inválida). 
@@ -144,7 +146,7 @@ public class SdiEntrega2Tests {
 		//Comprobamos que seguimos en la vista de registro
 		SeleniumUtils.textoPresentePagina(driver,"Registrar usuario");
 		// Comprobamos que no sale el aviso de repeticion de contraseña incorrecta
-		PO_RegisterView.checkKey(driver, "usuarioAutenticado.error.emailRegistered", PO_Properties.getSPANISH());
+		SeleniumUtils.textoPresentePagina(driver,"Error, ya existe un usuario con el email aportado");
 	}
 	
 	//PR05. Inicio de sesión con datos válidos /
