@@ -5,8 +5,6 @@ let https = require('https');
 let swig = require('swig');
 let crypto = require('crypto');
 let jwt = require('jsonwebtoken');
-let rest = require('request');
-app.set('rest',rest);
 app.set('jwt',jwt);
 app.set('clave','abcdefg');
 app.set('crypto',crypto);
@@ -20,8 +18,6 @@ app.use(function(req, res, next) {
     next();
 });
 
-let fileUpload = require('express-fileupload');
-app.use(fileUpload());
 
 let bodyParser = require('body-parser');
 let mongo = require('mongodb');
@@ -110,7 +106,7 @@ routerUsuarioToken.use(function(req, res, next) {
                     error: 'Token invalido o caducado'
                 });
                 // También podríamos comprobar que intoToken.usuario existe
-                return;
+
 
             } else {
                 // dejamos correr la petición
@@ -163,7 +159,7 @@ app.get('/', function (req, res) {
 
 
 
-app.use(function(err,req,res,next){
+app.use(function(err,req,res){
     console.log("Error producido: "+err)
     if(!res.headersSent){
         res.status(400);
