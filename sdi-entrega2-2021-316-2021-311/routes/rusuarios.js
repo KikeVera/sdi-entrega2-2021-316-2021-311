@@ -19,7 +19,7 @@ module.exports = function(app,swig,gestorBD) {
         let mensajesError = [];
         //Se comprueba que los campos no esten vacios
         if(req.body.email.trim()===''){
-            mensajesError.push("Error,debe rellenar el campo de email");
+            mensajesError.push("Error, debe rellenar el campo de email");
             app.get("logger").error("Error, debe rellenar el campo de email");
         }
         if(req.body.name.trim()===''){
@@ -27,8 +27,8 @@ module.exports = function(app,swig,gestorBD) {
             app.get("logger").error("Error, debe rellenar el campo de nombre");
         }
         if(req.body.surname.trim()===''){
-            mensajesError.push("Error debe rellenar el campo de apellido");
-            app.get("logger").error("Error debe rellenar el campo de apellido");
+            mensajesError.push("Error, debe rellenar el campo de apellido");
+            app.get("logger").error("Error, debe rellenar el campo de apellido");
         }
         if(req.body.password.trim()===''){
             mensajesError.push("Error, debe rellenar el campo de contraseña");

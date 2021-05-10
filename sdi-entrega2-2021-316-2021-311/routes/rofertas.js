@@ -52,7 +52,7 @@ module.exports = function(app,swig,gestorBD) {
         app.get("logger").info("Petición para agregar oferta");
         let mensajesError = [];
         //Se guarda un error si el campo esta vacio
-        console.log(req.body);
+
         if(req.body.titulo.trim()===''){
 
             app.get("logger").error("El campo del titulo está vacío");
