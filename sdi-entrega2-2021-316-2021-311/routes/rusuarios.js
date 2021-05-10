@@ -86,7 +86,7 @@ module.exports = function(app,swig,gestorBD) {
         if(req.session.usuario !=null){
             res.redirect("/ofertas/tienda");
         }else{
-            app.get("logger").fatal("Error accediendo al formulario de identificación");
+
             let respuesta = swig.renderFile('views/bidentificacion.html', {});
             res.send(respuesta);
         }
