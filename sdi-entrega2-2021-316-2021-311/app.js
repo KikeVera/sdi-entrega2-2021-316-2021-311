@@ -5,6 +5,10 @@ let https = require('https');
 let swig = require('swig');
 let crypto = require('crypto');
 let jwt = require('jsonwebtoken');
+let log4js = require("log4js");
+let logger=log4js.getLogger();
+
+app.set("logger",logger);
 app.set('jwt',jwt);
 app.set('clave','abcdefg');
 app.set('crypto',crypto);
@@ -159,7 +163,7 @@ app.get('/', function (req, res) {
 
 
 
-app.use(function(err,req,res){
+app.use(function(err,req,res,next){
     console.log("Error producido: "+err)
     if(!res.headersSent){
         res.status(400);

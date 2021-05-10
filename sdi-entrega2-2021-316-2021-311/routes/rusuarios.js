@@ -2,6 +2,7 @@ module.exports = function(app,swig,gestorBD) {
 
 
     app.get("/usuario/registrarse", function(req, res) {
+        logger.info("Petición de registro");
         if(req.session.usuario !=null){
             res.redirect("/ofertas/tienda");
         }else{
