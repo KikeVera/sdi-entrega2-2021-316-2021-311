@@ -1,5 +1,5 @@
 
-let ofertas;
+
 //Función para obtener las ofertas de la API
 function cargarOfertas(){
     $.ajax({

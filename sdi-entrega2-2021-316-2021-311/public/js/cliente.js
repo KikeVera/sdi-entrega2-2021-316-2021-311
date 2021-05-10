@@ -1,5 +1,6 @@
 
 //Se inicializan las variables, el token, la url y dos id que se usarán en la conversación de una oferta
+let ofertas;
 let token;
 let idOfertaSeleccionada;
 let idConversacion;
