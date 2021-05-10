@@ -262,20 +262,15 @@ public class SdiEntrega2Tests {
 		
 		//Obtenemos la lista de elementos TODO
 		List<WebElement> elementos = SeleniumUtils.EsperaCargaPagina(driver, "free", "/html/body/div/div[2]/form/table/tbody/tr", PO_View.getTimeout());
-		for (int i = 0;i<elementos.size();i++) {
-			WebElement elemento = elementos.get(i).findElement(By.id("email"));
-			String email = elemento.getText();
-			if(email.equals("PacoGonzalez@gmail.com")) {
-				WebElement checkbox =  elementos.get(i).findElement(By.id("checkBox")).findElement(By.name("checkboxUser"));
-				checkbox.click();
-				break;
-			}
-		}
+		WebElement elemento = elementos.get(0).findElement(By.id("email"));
+		String email = elemento.getText();
+		WebElement checkbox =  elementos.get(0).findElement(By.id("checkBox")).findElement(By.name("checkboxUser"));
+		checkbox.click();
 		//Eliminamos el usuario
 		By boton = By.className("btn");
 		driver.findElement(boton).click();
 		//Se comprueba que ya no aparece en la lista
-		PO_View.checkNotElement(driver, "PacoGonzalez@gmail.com");
+		PO_View.checkNotElement(driver,email);
 		
 	}	
 	
