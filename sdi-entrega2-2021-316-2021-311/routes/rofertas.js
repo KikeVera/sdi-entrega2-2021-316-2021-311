@@ -48,13 +48,17 @@ module.exports = function(app,swig,gestorBD) {
         res.send(respuesta);
     });
     app.post('/ofertas/agregar', function(req, res) {
+
         app.get("logger").info("Petición para agregar oferta");
         let mensajesError = [];
         //Se guarda un error si el campo esta vacio
+        console.log(req.body);
         if(req.body.titulo.trim()===''){
+
             app.get("logger").error("El campo del titulo está vacío");
             mensajesError.push("Error debe rellenar el campo de titulo");
         }
+
         //Se guarda un error si el campo esta vacio
         if(req.body.detalles.trim()===''){
             app.get("logger").error("El campo de detalles está vacío");
@@ -66,6 +70,8 @@ module.exports = function(app,swig,gestorBD) {
             mensajesError.push("El precio no puede ser negativo");
 
         }
+
+
         //Si existen errores se devuelve a la vista los mensajes de error
         if(mensajesError.length>0){
             let respuesta = renderWithUsuerData('views/bagregar.html',req.session,{mensajesError : mensajesError});
