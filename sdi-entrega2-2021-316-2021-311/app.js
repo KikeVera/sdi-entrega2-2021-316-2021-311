@@ -5,8 +5,13 @@ let https = require('https');
 let swig = require('swig');
 let crypto = require('crypto');
 let jwt = require('jsonwebtoken');
-let rest = require('request');
-app.set('rest',rest);
+let log4js = require("log4js");
+let logger=log4js.getLogger();
+logger.level = "debug";
+logger.info("Arrancando aplicación");
+
+
+app.set("logger",logger);
 app.set('jwt',jwt);
 app.set('clave','abcdefg');
 app.set('crypto',crypto);
@@ -20,8 +25,6 @@ app.use(function(req, res, next) {
     next();
 });
 
-let fileUpload = require('express-fileupload');
-app.use(fileUpload());
 
 let bodyParser = require('body-parser');
 let mongo = require('mongodb');
@@ -39,14 +42,14 @@ app.use(expressSession({
 }));
 
 // routerUsuarioSession
-var routerUsuarioSession = express.Router();
+let routerUsuarioSession = express.Router();
 routerUsuarioSession.use(function(req, res, next) {
-    console.log("routerUsuarioSession");
+
     if ( req.session.usuario ) {
         // dejamos correr la petición
         next();
     } else {
-        console.log("va a : "+req.session.destino)
+        logger.info("Usuario redirigido al login");
         res.redirect("/usuario/identificarse");
     }
 });
@@ -63,11 +66,12 @@ app.use("/ofertas/comprar/",routerUsuarioSession);
 //routeradmin
 let routerAdmin = express.Router();
 routerAdmin.use(function(req, res, next) {
-    console.log("routerAdmin");
+
 
     if(req.session.usuario.rol === "admin"){
         next();
     }else {
+        logger.warn("Solo los administradores pueden acceder a esta dirección");
         res.redirect("/ofertas/tienda?mensaje=Solo los administradores pueden acceder a esta dirección");
     }
 });
@@ -78,13 +82,14 @@ app.use("/admin/users",routerAdmin);
 //routerEstandar
 let routerEstandar = express.Router();
 routerEstandar.use(function(req, res, next) {
-    console.log("routerAdmin");
+
     if(req.session.usuario != null && req.session.usuario.rol === "estandar"){
         next();
     }else {
         if(req.session.usuario != null && req.session.usuario.rol === "admin"){
             res.redirect("/admin/users");
         }else{
+            logger.warn("Solo los usuarios pueden acceder a esta dirección");
             res.redirect("/ofertas/tienda?mensaje=Solo los usuarios pueden acceder a está dirección");
         }
 
@@ -104,13 +109,14 @@ routerUsuarioToken.use(function(req, res, next) {
         // verificar el token
         jwt.verify(token, 'secreto', function(err, infoToken) {
             if (err || (Date.now()/1000 - infoToken.tiempo) > 1000 ){
+                logger.error("Token invalido o caducado");
                 res.status(403); // Forbidden
                 res.json({
                     acceso : false,
                     error: 'Token invalido o caducado'
                 });
                 // También podríamos comprobar que intoToken.usuario existe
-                return;
+
 
             } else {
                 // dejamos correr la petición
@@ -120,6 +126,7 @@ routerUsuarioToken.use(function(req, res, next) {
         });
 
     } else {
+        logger.error("No hay token");
         res.status(403); // Forbidden
         res.json({
             acceso : false,
@@ -164,7 +171,7 @@ app.get('/', function (req, res) {
 
 
 app.use(function(err,req,res,next){
-    console.log("Error producido: "+err)
+
     if(!res.headersSent){
         res.status(400);
         res.send("Recurso no disponible");
@@ -178,5 +185,5 @@ https.createServer({
     key: fs.readFileSync('certificates/alice.key'),
     cert: fs.readFileSync('certificates/alice.crt')
 }, app).listen(app.get('port'), function() {
-    console.log("Servidor activo");
+
 });

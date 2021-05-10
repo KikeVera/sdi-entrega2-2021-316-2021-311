@@ -1,4 +1,5 @@
 
+//Función para cargar las conversaciones
 function cargarConversaciones(){
     $.ajax({
         url: URLbase + "/conversaciones",
@@ -7,12 +8,15 @@ function cargarConversaciones(){
         dataType: 'json',
         headers: { "token": token },
         success: function(respuesta) {
-            let conversations = respuesta;
-            obtenerOfertas(conversations);
+            //Si se obtiene correctamente llamamos a la función obtenerOfertas para obtener los datos de la oferta asociada a cada conversación
+
+            obtenerOfertas(respuesta);
         },
         error : function (error){
+            //Si hay un error nos desconectamos
             desconectar();
             $("p").remove(".alert-danger");
+            //Mostramos el error correspondiente
 
             if(error.status===403)
                 $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
@@ -21,6 +25,8 @@ function cargarConversaciones(){
         }
     });
 }
+
+//Función que obtiene todas las ofertas
 function obtenerOfertas(conversaciones){
     $.ajax({
         url: URLbase + "/allSales",
@@ -29,12 +35,15 @@ function obtenerOfertas(conversaciones){
         dataType: 'json',
         headers: { "token": token },
         success: function(respuesta) {
-            let sales = respuesta;
-            mostrarConversaciones(sales,conversaciones);
+            //Le pasamos tanto las ofertas como las conversaciones a la función que mostrará la tabla
+
+            mostrarConversaciones(respuesta,conversaciones);
         },
         error : function (error){
+            //Si hay un error nos desconectamos
             desconectar();
             $("p").remove(".alert-danger");
+            //Mostramos el error correspondiente
 
             if(error.status===403)
                 $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
@@ -43,34 +52,44 @@ function obtenerOfertas(conversaciones){
         }
     });
 }
+//Función que mostrará la tabla de las conversaciones
 function mostrarConversaciones (ofertas,conversaciones){
 
-    $( "#conversationList" ).empty(); // Vaciar la tabla
+
+    let list=$( "#conversationList" );
+    list.empty(); // Vaciar la tabla
+    //Recorremos todas las conversaciones de interesado
     for (let i = 0; i < conversaciones.interesado.length; i++) {
-        actualizarMensajesSinLeer(conversaciones.propietario[i]._id);
-        $( "#conversationList" ).append(
+        //Añadimos todos los campos a la tabla
+        list.append(
             "<tr id="+conversaciones.interesado[i]._id+">"+
             "<td>"+conversaciones.interesado[i].emailPropietario+"</td>" +
+            //En esta columna llamamos a la función que proporciona el titulo de la oferta asociada a la conversación que le pasemos
             "<td>"+obtenerTituloDeOferta(ofertas,conversaciones.interesado[i].idOferta)+"</td>" +
+            //Mostramos el número de mensajes sin leer almacenados en la variable
             "<td id=\"numeroDeMensajesSinLeer"+ conversaciones.interesado[i]._id+"\" ></td>" +
+
+            //Mostramos en estas columnas los enlaces para borrar o acceder a la conversación
             "<td>"+ "<a onclick=mostrarConversacion('"+conversaciones.interesado[i].idOferta+"')>Conversar</a>"+ "</td>" +
             "<td>"+ "<a onclick=eliminarConversacion('"+conversaciones.interesado[i]._id+"')>Eliminar</a>"+ "</td>"+
             "</tr>" );
         actualizarMensajesSinLeer(conversaciones.interesado[i]._id);
     }
+    //Recorremos todas las conversaciones de propietario
     for (let i = 0; i < conversaciones.propietario.length; i++) {
-        actualizarMensajesSinLeer(conversaciones.propietario[i]._id);
-        $( "#conversationList" ).append(
+        list.append(
             "<tr id="+conversaciones.propietario[i]._id+">"+
             "<td>"+conversaciones.propietario[i].emailInteresado+"</td>" +
-            "<td name=\"oferta\">"+obtenerTituloDeOferta(ofertas,conversaciones.propietario[i].idOferta)+"</td>" +
-            "<td name=\"numeroDeOfertas\" id=\"numeroDeMensajesSinLeer"+conversaciones.propietario[i]._id+"\"></td>" +
+            "<td>"+obtenerTituloDeOferta(ofertas,conversaciones.propietario[i].idOferta)+"</td>" +
+            "<td id=\"numeroDeMensajesSinLeer"+conversaciones.propietario[i]._id+"\"></td>" +
             "<td>"+ "<a onclick=mostrarConversacion('"+conversaciones.propietario[i].idOferta+"')>Conversar</a>"+ "</td>"+
             "<td>"+ "<a onclick=eliminarConversacion('"+conversaciones.propietario[i]._id+"')>Eliminar</a>"+ "</td>"+
             "</tr>" );
+        actualizarMensajesSinLeer(conversaciones.propietario[i]._id);
     }
 }
 
+//Función para obtener el titulo de la oferta del id que le pasemos
 function obtenerTituloDeOferta(ofertas,idOferta){
 
     for (let i = 0; i < ofertas.length; i++) {
@@ -79,6 +98,8 @@ function obtenerTituloDeOferta(ofertas,idOferta){
         }
     }
 }
+
+//Función que elmina la conversación
 function eliminarConversacion(id){
     $.ajax({
         url: URLbase + "/conversaciones/" + id,
@@ -87,11 +108,14 @@ function eliminarConversacion(id){
         dataType: 'json',
         headers: { "token": token },
         success: function() {
+            //Si se elimina correctamente la quitamos de la tabla
             $( "#"+id).remove();
         },
         error : function (error){
+            //Si hay un error nos desconectamos
             desconectar();
             $("p").remove(".alert-danger");
+            //Mostramos el error correspondiente
 
             if(error.status===403)
                 $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
@@ -101,7 +125,9 @@ function eliminarConversacion(id){
     });
 }
 
+//Función que actualiza los mensajes sin leer
 function actualizarMensajesSinLeer(id){
+    //Obtenemos todos los mensajes de la conversación
     $.ajax({
         url: URLbase + "/mensajes/" + id,
         type: "GET",
@@ -109,18 +135,23 @@ function actualizarMensajesSinLeer(id){
         dataType: 'json',
         headers: { "token": token },
         success: function(result) {
+            //Para cada mensaje comprobamos si esá leído, si no lo está sumamos uno a la variable
             let mensajesSinLeer=0
             for(let i = 0 ; i <result.length;i++){
                 if(!result[i].leido && result[i].autor !== Cookies.get('email')){
                     mensajesSinLeer++;
                 }
             }
+            //Actualizamos el valor en la tabla
             $( "#numeroDeMensajesSinLeer"+id).html(""+mensajesSinLeer);
+            //Volvemos a llamar a la función para actualizar constantemente los mensajes no léidos
             actualizarMensajesSinLeer(id);
         },
         error : function (error){
+            //Si hay un error nos desconectamos
             desconectar();
             $("p").remove(".alert-danger");
+            //Mostramos el error correspondiente
 
             if(error.status===403)
                 $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
@@ -130,9 +161,11 @@ function actualizarMensajesSinLeer(id){
     });
 }
 
+//Si intentamos acceder sin estar logeados volvemos al login
 if ( Cookies.get('token') === null ) {
     $("#contenedor-principal").load("widget-login.html");
 }
 else {
+    //Si estamos logeados cargamos las conversaciones
     cargarConversaciones();
 }

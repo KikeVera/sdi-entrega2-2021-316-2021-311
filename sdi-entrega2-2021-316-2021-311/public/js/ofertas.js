@@ -1,5 +1,6 @@
 
-var ofertas;
+let ofertas;
+//Función para obtener las ofertas de la API
 function cargarOfertas(){
     $.ajax({
         url: URLbase + "/ofertas",
@@ -8,12 +9,15 @@ function cargarOfertas(){
         dataType: 'json',
         headers: { "token": token },
         success: function(respuesta) {
+            //Si obtenemos correctamente las ofertas actulizamos la tabla con ellas
             ofertas = respuesta;
             actualizarTabla(ofertas);
         },
         error : function (error){
+            //Si hay un error nos desconectamos
             desconectar();
             $("p").remove(".alert-danger");
+            //Mostramos el error correspondiente
 
             if(error.status===403)
                 $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
@@ -22,16 +26,22 @@ function cargarOfertas(){
         }
     });
 }
+
+//Función para actualizar la tabla
 function actualizarTabla(ofertasMostrar){
 
-    $( "#tablaCuerpo" ).empty(); // Vaciar la tabla
-    for (i = 0; i < ofertasMostrar.length; i++) {
-        $( "#tablaCuerpo" ).append(
+    let cuerpo=$( "#tablaCuerpo" );
+    cuerpo.empty(); // Vaciar la tabla
+    //Recorremos todas las ofertas
+    for (let i = 0; i < ofertasMostrar.length; i++) {
+        //Para cada una mostramos todos sus datos en distintas columnas
+        cuerpo.append(
             "<tr id="+ofertasMostrar[i]._id+">"+
             "<td>"+ofertasMostrar[i].titulo+"</td>" +
             "<td>"+ofertasMostrar[i].detalles+"</td>" +
             "<td>"+ofertasMostrar[i].precio+"</td>" +
             "<td>"+ofertasMostrar[i].vendedor+"</td>" +
+            //En esta columna tendremos en enlace a la conversación
             "<td>"+ "<a onclick=mostrarConversacion('"+ofertasMostrar[i]._id+"')>Conversacion</a>"+ "</td>"+
 
 
@@ -40,10 +50,12 @@ function actualizarTabla(ofertasMostrar){
     }
 }
 
+//Si no estamos logeados nos redirigimos al login
 if ( Cookies.get('token') === null ) {
     $("#contenedor-principal").load("widget-login.html");
 }
 else {
+    //Si estamos logeados cargamos las ofertas automaticamente
     cargarOfertas();
 }
 
