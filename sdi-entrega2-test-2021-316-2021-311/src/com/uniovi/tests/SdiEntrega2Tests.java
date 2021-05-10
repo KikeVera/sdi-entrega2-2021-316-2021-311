@@ -41,8 +41,12 @@ public class SdiEntrega2Tests {
 	//static String PathFirefox65 = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
 	//static String Geckdriver024 = "C:\\Path\\geckodriver024win64.exe";
 	//En MACOSX (Debe ser la versión 65.0.1 y desactivar las actualizacioens automáticas):
-	static String PathFirefox65 = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
-	static String Geckdriver024 = "C:\\Carpetas\\Clase2\\SDI\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
+	//Adolfo
+	//static String PathFirefox65 = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
+	//static String Geckdriver024 = "C:\\Carpetas\\Clase2\\SDI\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
+	//Kike
+	 static String PathFirefox65="C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe";
+	static String Geckdriver024="C:\\Users\\Kike\\Desktop\\SDI\\geckoDriver\\geckodriver024win64.exe";
 	//static String PathFirefox64 = "/Applications/Firefox.app/Contents/MacOS/firefox-bin";
 	//static String Geckdriver024 = "/Users/delacal/Documents/SDI1718/firefox/geckodriver024mac";
 	//static String Geckdriver022 = "/Users/delacal/Documents/SDI1718/firefox/geckodriver023mac";

@@ -1,14 +1,14 @@
 package com.uniovi.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
+
 
 import java.util.List;
 
 import org.bson.Document;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -21,7 +21,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.uniovi.tests.pageobjects.PO_LoginView;
 import com.uniovi.tests.pageobjects.PO_MongoServer;
-import com.uniovi.tests.pageobjects.PO_NavView;
+
 import com.uniovi.tests.pageobjects.PO_View;
 import com.uniovi.tests.util.SeleniumUtils;
 
@@ -29,8 +29,12 @@ import com.uniovi.tests.util.SeleniumUtils;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) 
 public class SdiEntrega2ClientTests {
 	
-	static String PathFirefox65 = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
-	static String Geckdriver024 = "C:\\Carpetas\\Clase2\\SDI\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
+		//Adolfo
+		//static String PathFirefox65 = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
+		//static String Geckdriver024 = "C:\\Carpetas\\Clase2\\SDI\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
+		//Kike
+		 static String PathFirefox65="C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe";
+		static String Geckdriver024="C:\\Users\\Kike\\Desktop\\SDI\\geckoDriver\\geckodriver024win64.exe";
 	
 	static WebDriver driver = getDriver(PathFirefox65, Geckdriver024); 
 	static String URLHTML = "https://localhost:8081/cliente.html?w=ofertas";
@@ -54,6 +58,7 @@ public class SdiEntrega2ClientTests {
 	}
 	@After
 	public void tearDown(){
+		PO_MongoServer.removeInitialiceData();
 		driver.manage().deleteAllCookies();
 	}
 	
@@ -79,6 +84,7 @@ public class SdiEntrega2ClientTests {
 			elementos.get(0).click();
 			PO_LoginView.fillFormClient(driver, "PacoGonzalez@gmail.com", "123456");
 			PO_View.checkElement(driver, "text", "Ofertas de la tienda");
+			
 			
 		}
 		
@@ -133,22 +139,76 @@ public class SdiEntrega2ClientTests {
 		//mensaje aparece en el listado de mensajes.
 		@Test
 		public void PR34() {
+			PO_MongoServer.initialiceConversations();
+			// Vamos al formulario de inicio de sesion
+			List<WebElement> elementos = PO_View.checkElement(driver, "free", "//*[@id=\"mLogin\"]/a");
+			elementos.get(0).click();
+			PO_LoginView.fillFormClient(driver, "PacoGonzalez@gmail.com", "123456");
+			PO_View.checkElement(driver, "text", "Ofertas de la tienda");
+			
+			//Hacemos click en la ofertaTest5 que no tiene ninguna conversación
+			elementos= PO_View.checkElement(driver, "free","//td[text()= 'OfertaTest5']/following-sibling::*[4]");
+			elementos.get(0).click();
+			
+			//Escribimos un mensaje en el campo de texto
+			WebElement msg = driver.findElement(By.id("message"));
+			msg.click();
+			msg.clear();
+			msg.sendKeys("Hola que tal");
+			//Enviamos el mensaje
+			By boton = By.id("boton-send-message");
+			driver.findElement(boton).click();	
+			//Comprobamos que aparece el mensaje
+			PO_View.checkElement(driver, "text", "Hola que tal");	
+			PO_View.checkElement(driver, "class", "propios");
+			
 
-			assertTrue("PR31 sin hacer", false);			
+					
 		}
 		//PR035. Sobre el listado de conversaciones enviar un mensaje a una conversación ya abierta.
 		//Comprobar que el mensaje aparece en el listado de mensajes.
 		@Test
 		public void PR35() {
 
-			assertTrue("PR31 sin hacer", false);			
+			PO_MongoServer.initialiceConversations();
+			// Vamos al formulario de inicio de sesion
+			List<WebElement> elementos = PO_View.checkElement(driver, "free", "//*[@id=\"mLogin\"]/a");
+			elementos.get(0).click();
+			PO_LoginView.fillFormClient(driver, "PacoGonzalez@gmail.com", "123456");
+			PO_View.checkElement(driver, "text", "Ofertas de la tienda");	
+			
+			//Nos dirigimos a nuestras conversaciones
+			
+			elementos = PO_View.checkElement(driver, "free", "//*[@id=\"mConversaciones\"]/a");
+			elementos.get(0).click();
+			
+			//Clickamos en conversar en la primera que tengamos abierta
+			elementos = PO_View.checkElement(driver, "free", "/html/body/div/div/table/tbody/tr[1]/td[4]/a");
+			elementos.get(0).click();
+			
+			//Comprobamos que ya existe un mensaje
+			PO_View.checkElement(driver, "text", "Hola");	
+			PO_View.checkElement(driver, "class", "propios");
+			
+			//Escribimos un mensaje en el campo de texto
+			WebElement msg = driver.findElement(By.id("message"));
+			msg.click();
+			msg.clear();
+			msg.sendKeys("Hola que tal");
+			//Enviamos el mensaje
+			By boton = By.id("boton-send-message");
+			driver.findElement(boton).click();	
+			//Comprobamos que aparece el mensaje
+			PO_View.checkElement(driver, "text", "Hola que tal");	
+			PO_View.checkElement(driver, "class", "propios");
 		}
 		
 		//PR036. Mostrar el listado de conversaciones ya abiertas. Comprobar que el listado contiene las
 		//conversaciones que deben ser.
 		@Test
 		public void PR36() {
-
+			//Inicializamos conversaciones
+			PO_MongoServer.initialiceConversations();
 			// Vamos al formulario de inicio de sesion
 			List<WebElement> elementos = PO_View.checkElement(driver, "free", "//*[@id=\"mLogin\"]/a");
 			elementos.get(0).click();
@@ -169,6 +229,9 @@ public class SdiEntrega2ClientTests {
 		//comprobar que el listado se actualiza correctamente.
 		@Test
 		public void PR37() {
+			
+			//Inicializamos conversaciones
+			PO_MongoServer.initialiceConversations();
 
 			// Vamos al formulario de inicio de sesion
 			List<WebElement> elementos = PO_View.checkElement(driver, "free", "//*[@id=\"mLogin\"]/a");
@@ -194,6 +257,9 @@ public class SdiEntrega2ClientTests {
 		//comprobar que el listado se actualiza correctamente.
 		@Test
 		public void PR38() {
+			
+			//Inicializamos conversaciones
+			PO_MongoServer.initialiceConversations();
 
 			// Vamos al formulario de inicio de sesion
 			List<WebElement> elementos = PO_View.checkElement(driver, "free", "//*[@id=\"mLogin\"]/a");
@@ -224,14 +290,72 @@ public class SdiEntrega2ClientTests {
 		//leído
 		@Test
 		public void PR39() {
-
-			assertTrue("PR31 sin hacer", false);			
+			//Inicializamos conversaciones
+			PO_MongoServer.initialiceConversations();
+			
+			// Vamos al formulario de inicio de sesion
+			List<WebElement> elementos = PO_View.checkElement(driver, "free", "//*[@id=\"mLogin\"]/a");
+			elementos.get(0).click();
+			PO_LoginView.fillFormClient(driver, "PacoGonzalez@gmail.com", "123456");
+			PO_View.checkElement(driver, "text", "Ofertas de la tienda");
+			
+			//Hacemos click en la ofertaTest5 que no tiene ninguna conversación
+			elementos= PO_View.checkElement(driver, "free","//td[text()= 'OfertaTest5']/following-sibling::*[4]");
+			elementos.get(0).click();
+			
+			//Escribimos un mensaje en el campo de texto
+			WebElement msg = driver.findElement(By.id("message"));
+			msg.click();
+			msg.clear();
+			msg.sendKeys("Hola que tal");
+			//Enviamos el mensaje
+			By boton = By.id("boton-send-message");
+			driver.findElement(boton).click();	
+			//Comprobamos que aparece el mensaje
+			PO_View.checkElement(driver, "text", "Hola que tal");	
+			PO_View.checkElement(driver, "class", "propios");
+			
+			//Nos desconectamos
+			 elementos = PO_View.checkElement(driver, "free", "//*[@id=\"mdesconectar\"]/a");
+			elementos.get(0).click();
+			
+			// Vamos al formulario de inicio de sesion con emilio
+			 elementos = PO_View.checkElement(driver, "free", "//*[@id=\"mLogin\"]/a");
+			elementos.get(0).click();
+			PO_LoginView.fillFormClient(driver, "EmilioFernandez@gmail.com", "123456");
+			PO_View.checkElement(driver, "text", "Ofertas de la tienda");
+			
+			//Nos dirigimos a nuestras conversaciones
+			
+			elementos = PO_View.checkElement(driver, "free", "//*[@id=\"mConversaciones\"]/a");
+			elementos.get(0).click();
+			
+			//Comprobamos que hay un mensaje sin leer
+			elementos= PO_View.checkElement(driver, "free","//td[text()= 'OfertaTest5']/following-sibling::td[text()='1']");
+			
+			
+			//Hacemos click en conversar en la conversación de ofertaTest5
+			elementos= PO_View.checkElement(driver, "free","//td[text()= 'OfertaTest5']/following-sibling::*[2]/a");
+			elementos.get(0).click();
+			
+			//Chekeamos que nada mas entrar el mensaje no está leído
+			PO_View.checkElement(driver, "text", "✔");
+			
+			//Chekeamos que después pasa a estarlo automaticamente
+			
+			PO_View.checkElement(driver, "text", "✔✔");
+			
+			
+						
 		}
 		//PR040. Identificarse en la aplicación y enviar tres mensajes a una oferta, validar que los mensajes
 		//enviados aparecen en el chat. Identificarse después con el usuario propietario de la oferta y
 		//validar que el número de mensajes sin leer aparece en su oferta.
 		@Test
 		public void PR40() {
+			
+			//Inicializamos conversaciones
+			PO_MongoServer.initialiceConversations();
 
 			// Vamos al formulario de inicio de sesion
 			List<WebElement> elementos = PO_View.checkElement(driver, "free", "//*[@id=\"mLogin\"]/a");

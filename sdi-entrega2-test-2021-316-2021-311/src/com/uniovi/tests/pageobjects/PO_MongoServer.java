@@ -50,6 +50,14 @@ public class PO_MongoServer {
 			MongoCollection<Document> sales = mongoClient.getDatabase("myFirstDatabase").getCollection("ofertas");
 			sales.insertMany(ofertas);
 			
+		}
+	}
+	
+	
+	
+	public static void initialiceConversations() {
+		try (MongoClient mongoClient = MongoClients.create(connectionString)) {
+			
 			List<Document> conversaciones = new ArrayList<Document>();
 			conversaciones.add(new Document("idOferta",getSaleByTitle("OfertaTest2").get("_id")).append("emailInteresado", "EmilioFernandez@gmail.com").append("emailPropietario", "PacoGonzalez@gmail.com"));
 			conversaciones.add(new Document("idOferta",getSaleByTitle("OfertaTest4").get("_id")).append("emailInteresado", "PacoGonzalez@gmail.com").append("emailPropietario", "MariaDelagado@gmail.com"));
@@ -68,7 +76,11 @@ public class PO_MongoServer {
 		
 			MongoCollection<Document> mensagges = mongoClient.getDatabase("myFirstDatabase").getCollection("mensajes");
 			mensagges.insertMany(mensajes);
+			
 		}
+		
+		
+		
 	}
 	
 	public static void removeInitialiceData() {
