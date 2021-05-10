@@ -1,10 +1,12 @@
 module.exports = function(app,swig,gestorBD) {
 
+
     app.get("/admin/users", function(req, res) {
         //Busca en la base de datos todos los usuarios diferentes al usuario administrador
         let criterio = {rol:{$ne: 'admin'}}
         gestorBD.obtenerUsuarios(criterio, function( allUsers ) {
             if (allUsers == null) {
+                app.get("logger").fatal("Error accediendo a la vista de la lista de usuarios");
                 res.redirect("/");
             } else {
                 let respuesta = swig.renderFile('views/badmin.html',
@@ -18,7 +20,7 @@ module.exports = function(app,swig,gestorBD) {
     });
     app.post("/admin/users/delete", function(req, res) {
 
-
+        app.get("logger").info("Petición para borrar usuarios");
         let users=req.body.checkboxUser;
         let emails = []
         if(Array.isArray(users)){
@@ -44,6 +46,7 @@ module.exports = function(app,swig,gestorBD) {
             gestorBD.eliminarUsuario(criterio, function( user ) {
 
                 if ( user == null ){
+                    app.get("logger").fatal("Error al borrar usuarios");
                     res.redirect("/admin/users?tipoMensaje=alert-danger&mensaje=Error al borrar usuarios");
                 }else{
                     criterio = {vendedor:listaDeEmails[0],
