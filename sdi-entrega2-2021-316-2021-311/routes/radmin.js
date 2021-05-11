@@ -30,60 +30,77 @@ module.exports = function(app,swig,gestorBD) {
             }
             //Borra todos los usuarios de la lista recursivamente
             recursiveDelete(res,emails);
-            res.redirect("/admin/users")
+
         }
         else if(users!==undefined){
             //Borra el usaurio dado de la base de datos con su informacion relacionada
             emails.push(users);
             recursiveDelete(res,emails);
-            res.redirect("/admin/users")
+
         }
     });
 
     function recursiveDelete(res,listaDeEmails){
         if(listaDeEmails === undefined || listaDeEmails.length === 0){
-            return;
+            res.redirect("/admin/users");
         }else{
             //Elimina el usuario de la base de datos
-            let criterio = {"email" : listaDeEmails[0] };
+            let criterio = {"email" : listaDeEmails[listaDeEmails.length-1] };
             gestorBD.eliminarUsuario(criterio, function( user ) {
 
                 if ( user == null ){
                     app.get("logger").fatal("Error al borrar usuarios");
                     res.redirect("/admin/users?tipoMensaje=alert-danger&mensaje=Error al borrar usuarios");
                 }else{
-                    criterio = {vendedor:listaDeEmails[0]}
+                    criterio = {vendedor:listaDeEmails[listaDeEmails.length-1]}
                     //Elimina las ofertas del usuario
                     gestorBD.eliminarOferta(criterio,function (oferta){
                        if(oferta == null){
                            app.get("logger").fatal("Error al borrar ofertas");
                            res.redirect("/admin/users?tipoMensaje=alert-danger&mensaje=Error al borrar las ofertas del usuario");
                        }else{
-                           criterio = {emailInteresado: listaDeEmails[0]}
-                           //Elimina las conversaciones donde el usaurio es el interesado
-                           gestorBD.eliminarConversacionesCascada(criterio,function (conversacion) {
-                               if(conversacion===null){
-                                   app.get("logger").fatal("Error al borrar conversaciones");
-                                   res.redirect("/admin/users?tipoMensaje=alert-danger&mensaje=Error al borrar las conversaciones del usuario");
-                               }else{
-                                   criterio = {emailPropietario: listaDeEmails[0]}
-                                   //Elimina las conversaciones donde el usaurio es el propietario
-                                   gestorBD.eliminarConversacionesCascada(criterio,function (conversacion) {
-                                       if(conversacion===null){
-                                           app.get("logger").fatal("Error al borrar conversaciones");
-                                           res.redirect("/admin/users?tipoMensaje=alert-danger&mensaje=Error al borrar las conversaciones del usuario");
-                                       }else{
-                                           recursiveDelete(listaDeEmails.pop());
-                                       }
-                                   });
-                               }
-                           });
+                           criterio = {emailInteresado: listaDeEmails[listaDeEmails.length-1]}
+                           eliminarConversaciones(criterio);
+                           criterio = {emailPropietario: listaDeEmails[listaDeEmails.length-1]}
+                           eliminarConversaciones(criterio);
+                           listaDeEmails.pop();
+                           recursiveDelete(res,listaDeEmails);
                        }
                     });
                 }
-
             });
         }
+        function eliminarConversaciones(criterio) {
+            gestorBD.obtenerConversaciones(criterio,function (conversaciones){
+                if(conversaciones ==null){
+                    return null;
+                }else{
+                    removeMensajesRecursivo(conversaciones);
+                    gestorBD.eliminarConversaciones(criterio,function (eliminadas){
+                        if(eliminadas == null){
+                            return null;
+                        }else{
+                            return;
+                        }
+                    });
+                }
+            });
+
+        }
+
+    }
+    function removeMensajesRecursivo(conversaciones){
+        if(conversaciones.length===0){
+            return;
+        }
+        let criterio = {"idConversacion" : conversaciones[conversaciones.length-1]._id};
+        gestorBD.eliminarMensajes(criterio,function (mensajes){
+            if(mensajes == null){
+                res.redirect("/admin/users?tipoMensaje=alert-danger&mensaje=Error al borrar los mensajes");
+            }else{
+                return removeMensajesRecursivo(conversaciones.pop());
+            }
+        });
     }
 
 };

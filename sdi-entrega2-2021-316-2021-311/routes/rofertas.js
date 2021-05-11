@@ -181,14 +181,8 @@ module.exports = function(app,swig,gestorBD) {
                         res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al borrar oferta");
                     } else {
                         let criterio2 = {"idOferta" : gestorBD.mongo.ObjectID(req.params.id)}
-                        gestorBD.eliminarConversacionesCascada(criterio2,function (conversaciones){
-                            if(conversaciones == null){
-                                app.get("logger").fatal("Error al borrar oferta");
-                                res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al borrar conversaciones de la oferta");
-                            }else{
-                                res.redirect("/ofertas/propias");
-                            }
-                        });
+                        eliminarConversaciones(res,criterio2);
+                        res.redirect("/ofertas/propias");
                     }
                 });
             }
@@ -299,5 +293,38 @@ module.exports = function(app,swig,gestorBD) {
                 dinero: session.usuario.dinero,
                 rol : session.usuario.rol});
         return swig.renderFile(view,parametros)
+    }
+    function eliminarConversaciones(res,criterio) {
+        gestorBD.obtenerConversaciones(criterio,function (conversaciones){
+            if(conversaciones ==null){
+                app.get("logger").fatal("Error al borrar oferta");
+                res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al borrar conversaciones de la oferta");
+            }else{
+                removeMensajesRecursivo(res,conversaciones);
+                gestorBD.eliminarConversaciones(criterio,function (eliminadas){
+                    if(eliminadas == null){
+                        app.get("logger").fatal("Error al borrar oferta");
+                        res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al borrar conversaciones de la oferta");
+                    }else{
+                        return;
+                    }
+                });
+            }
+        });
+
+    }
+    function removeMensajesRecursivo(res,conversaciones){
+        if(conversaciones.length===0){
+            return;
+        }
+        let criterio = {"idConversacion" : conversaciones[conversaciones.length-1]._id};
+        gestorBD.eliminarMensajes(criterio,function (mensajes){
+            if(mensajes == null){
+                app.get("logger").fatal("Error al borrar oferta");
+                res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al borrar conversaciones de la oferta");
+            }else{
+                return removeMensajesRecursivo(conversaciones.pop());
+            }
+        });
     }
 };

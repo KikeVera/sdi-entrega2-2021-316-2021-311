@@ -310,28 +310,28 @@ module.exports = {
             } else {
                 let collection = db.collection('conversaciones');
                 collection.find(criterio,function (err,result){
-                   if(err){
-                       funcionCallback(null);
-                   }else {
-                       result.forEach(document => {
-                           let criterio2 = {idConversacion : document._id};
-                           let collectionMensajes = db.collection('mensajes');
-                           collectionMensajes.remove(criterio2, function (err, result) {
-                               if (err) {
-                                   funcionCallback(null);
-                               } else {
-                                   collection.remove(criterio, function (err, result) {
-                                       if (err) {
-                                           funcionCallback(null);
-                                       } else {
-                                           funcionCallback(result);
-                                       }
-                                       db.close();
-                                   });
-                               }
-                           });
-                       })
-                   }
+                    if(err){
+                        funcionCallback(null);
+                    }else {
+                        result.forEach(document => {
+                            let criterio2 = {idConversacion : document._id};
+                            let collectionMensajes = db.collection('mensajes');
+                            collectionMensajes.remove(criterio2, function (err, result) {
+                                if (err) {
+                                    funcionCallback(null);
+                                } else {
+                                    collection.remove(criterio, function (err, result) {
+                                        if (err) {
+                                            funcionCallback(null);
+                                        } else {
+                                            funcionCallback(result);
+                                        }
+                                        db.close();
+                                    });
+                                }
+                            });
+                        })
+                    }
                 });
             }
         });

@@ -1,6 +1,5 @@
  //Asignamos a la variable el valor que tenemos en las cookies
 idOfertaSeleccionada=Cookies.get('idOferta');
-idConversacion=null;
 
 //Si intentamos venir aquí deslogeados volvemos al login
 if(Cookies.get('token') == null){
