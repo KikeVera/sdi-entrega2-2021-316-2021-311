@@ -107,7 +107,9 @@ routerUsuarioToken.use(function(req, res, next) {
     let token = req.headers['token'] || req.body.token || req.query.token;
     if (token != null) {
         // verificar el token
+
         jwt.verify(token, 'secreto', function(err, infoToken) {
+
             if (err || (Date.now()/1000 - infoToken.tiempo) > 1000 ){
                 logger.error("Token invalido o caducado");
                 res.status(403); // Forbidden

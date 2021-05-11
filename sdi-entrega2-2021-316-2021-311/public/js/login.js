@@ -28,7 +28,7 @@ $("#boton-login").click(function (){
 
         error:function (error){
             //Si hay un error en el login se muestra el mensaje de error
-            $("p").remove(".alert-danger");
+
             Cookies.remove('token');
             $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
 
@@ -41,8 +41,15 @@ $("#boton-login").click(function (){
 
 });
 
+
+if(errorMostrar!==undefined){
+    $("p").remove(".alert-danger");
+    $("#widget-login").prepend("<p class='alert alert-danger'>"+errorMostrar+"</p>");
+}
+
 //Si se intenta acceder al login estand ya logeados se redirige a las ofertas
 if ( Cookies.get('token') != null ) {
     $("#contenedor-principal").load("widget-ofertas.html");
 
 }
+

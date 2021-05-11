@@ -28,6 +28,10 @@ function desconectar(){
     updateNav();
 }
 
+
+
+
+
 //Función para cargar el html de una conversacion
 function mostrarConversacion(idOferta){
     //Se guarda en las cookies el id de la oferta para usarlo mas adelante en la conversación

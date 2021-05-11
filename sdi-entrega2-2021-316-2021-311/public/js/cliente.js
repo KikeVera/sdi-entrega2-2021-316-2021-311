@@ -5,6 +5,7 @@ let token;
 let idOfertaSeleccionada;
 let idConversacion;
 let URLbase = "https://localhost:8081/api";
+let errorMostrar;
 
 
 //Se obtiene el tooken de las cookies
@@ -73,5 +74,7 @@ function updateNav(){
 
     }
 }
+
+
 
 

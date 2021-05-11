@@ -20,9 +20,9 @@ function cargarOfertas(){
             //Mostramos el error correspondiente
 
             if(error.status===403)
-                $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
+                errorMostrar="Error obteniendo ofertas, posiblemente su sesión este caducada";
             else
-                $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
+                errorMostrar=error.responseJSON.error;
         }
     });
 }

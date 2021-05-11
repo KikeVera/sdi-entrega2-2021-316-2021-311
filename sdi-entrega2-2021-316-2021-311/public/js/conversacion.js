@@ -1,5 +1,6 @@
  //Asignamos a la variable el valor que tenemos en las cookies
 idOfertaSeleccionada=Cookies.get('idOferta');
+idConversacion=null;
 
 //Si intentamos venir aquí deslogeados volvemos al login
 if(Cookies.get('token') == null){
@@ -15,6 +16,7 @@ else {
 
     //Función para obtener la conversación de la oferta
     function getConversacion() {
+
         $.ajax({
             url: URLbase + "/conversaciones/" + idOfertaSeleccionada,
             type: "GET",
@@ -32,7 +34,8 @@ else {
                 }
                 //Si no podemos obtener la conversación lo intentamos otra vez hasta que se pueda obtener
                 else {
-                    getConversacion();
+                    if( new URL(window.location.href).searchParams.get("w")=== "conversacion")
+                        getConversacion();
                 }
 
             },
@@ -42,9 +45,9 @@ else {
                 $("p").remove(".alert-danger");
                 //Mostramos el error correspondiente
                 if(error.status===403)
-                    $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
+                    errorMostrar="Error obteniendo conversaciones, posiblemente su sesión este caducada";
                 else
-                    $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
+                    errorMostrar=error.responseJSON.error;
 
 
             },
@@ -62,6 +65,7 @@ else {
 
         //Iniciamos variable  donde se guarda´ran
         let conversacion="";
+
 
         $.ajax({
             url: URLbase + "/mensajes/"+idConversacion,
@@ -98,21 +102,22 @@ else {
                 //Se muestra en pantalla los mensajes
                 $("#mensajes").html(conversacion);
                 //Se llama de nuevo a la función para ir actualizando los nuevos mensajes
-                getMensajes();
+              if( new URL(window.location.href).searchParams.get("w")=== "conversacion")
+                    getMensajes();
 
 
             },
 
             error: function (error) {
                 //Si hay un error nos desconectamos
-                desconectar();
+
                 $("p").remove(".alert-danger");
                 //Mostramos el error correspondiente
 
                 if(error.status===403)
-                    $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
+                    errorMostrar="Error obteniendo mensajes, posiblemente su sesión este caducada";
                 else
-                    $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
+                    errorMostrar=error.responseJSON.error;
 
             },
 
@@ -141,9 +146,9 @@ else {
                 //Mostramos el error correspondiente
 
                 if(error.status===403)
-                    $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
+                    errorMostrar="Error leyendo mensaje, posiblemente su sesión este caducada";
                 else
-                    $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
+                    errorMostrar=error.responseJSON.error;
 
             },
 
@@ -189,9 +194,9 @@ else {
                 //Mostramos el error correspondiente
 
                 if(error.status===403)
-                    $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
+                    errorMostrar="Error enviando mensaje, posiblemente su sesión este caducada";
                 else
-                    $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
+                    errorMostrar=error.responseJSON.error;
 
             },
 

@@ -146,8 +146,9 @@ module.exports = function(app, gestorBD) {
                             }
                             //Se inserta dicha conversación
                             gestorBD.insertarConversacion(conversacion, function (id) {
-                                app.get("logger").fatal("Se ha producido un error obteniendo las conversaciones");
+
                                 if (id == null) {
+                                    app.get("logger").fatal("Se ha producido un error obteniendo las conversaciones");
                                     res.status(500);
                                     res.json({
                                         error: "Se ha producido un error obteniendo las conversaciones",

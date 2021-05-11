@@ -19,9 +19,9 @@ function cargarConversaciones(){
             //Mostramos el error correspondiente
 
             if(error.status===403)
-                $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
+                errorMostrar="Error cargando conversaciones, posiblemente su sesión este caducada";
             else
-                $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
+                errorMostrar=error.responseJSON.error;
         }
     });
 }
@@ -46,9 +46,9 @@ function obtenerOfertas(conversaciones){
             //Mostramos el error correspondiente
 
             if(error.status===403)
-                $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
+                errorMostrar="Error obteniendo ofertas, posiblemente su sesión este caducada";
             else
-                $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
+                errorMostrar=error.responseJSON.error;
         }
     });
 }
@@ -118,9 +118,9 @@ function eliminarConversacion(id){
             //Mostramos el error correspondiente
 
             if(error.status===403)
-                $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
+                errorMostrar="Error eliminando conversaciones, posiblemente su sesión este caducada";
             else
-                $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
+                errorMostrar=error.responseJSON.error;
         }
     });
 }
@@ -145,18 +145,18 @@ function actualizarMensajesSinLeer(id){
             //Actualizamos el valor en la tabla
             $( "#numeroDeMensajesSinLeer"+id).html(""+mensajesSinLeer);
             //Volvemos a llamar a la función para actualizar constantemente los mensajes no léidos
-            actualizarMensajesSinLeer(id);
+            if( new URL(window.location.href).searchParams.get("w")=== "conversationList")
+                actualizarMensajesSinLeer(id);
         },
         error : function (error){
-            //Si hay un error nos desconectamos
-            desconectar();
-            $("p").remove(".alert-danger");
-            //Mostramos el error correspondiente
 
-            if(error.status===403)
-                $("#widget-login").prepend("<p class='alert alert-danger'>Error obteniendo conversaciones, posiblemente su sesión este caducada</p>");
-            else
-                $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
+
+            if(error.status===403){
+                desconectar();
+                errorMostrar="Error actualizando mensajes, posiblemente su sesión este caducada";
+            }
+
+
         }
     });
 }
