@@ -39,14 +39,10 @@ else {
 
             },
             error: function (error) {
-                //Si hay un error nos desconectamos
-                desconectar();
-                $("p").remove(".alert-danger");
-                //Mostramos el error correspondiente
-                if(error.status===403)
-                    errorMostrar="Error obteniendo conversaciones, posiblemente su sesión este caducada";
-                else
+                if(error.status!==403){
+                    desconectar();
                     errorMostrar=error.responseJSON.error;
+                }
 
 
             },
@@ -108,15 +104,11 @@ else {
             },
 
             error: function (error) {
-                //Si hay un error nos desconectamos
-
-                $("p").remove(".alert-danger");
-                //Mostramos el error correspondiente
-
-                if(error.status===403)
-                    errorMostrar="Error obteniendo mensajes, posiblemente su sesión este caducada";
-                else
+                if(error.status!==403){
+                    desconectar();
                     errorMostrar=error.responseJSON.error;
+                }
+
 
             },
 

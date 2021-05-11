@@ -151,9 +151,9 @@ function actualizarMensajesSinLeer(id){
         error : function (error){
 
 
-            if(error.status===403){
+            if(error.status!==403){
                 desconectar();
-                errorMostrar="Error actualizando mensajes, posiblemente su sesión este caducada";
+                errorMostrar=error.responseJSON.error;
             }
 
 
