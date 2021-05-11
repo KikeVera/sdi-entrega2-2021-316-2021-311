@@ -65,7 +65,7 @@ public class SdiEntrega2ClientTests {
 	@BeforeClass 
 	static public void begin() {
 		//COnfiguramos las pruebas.
-		PO_View.setTimeout(4);
+		PO_View.setTimeout(6);
 
 	}
 	@AfterClass

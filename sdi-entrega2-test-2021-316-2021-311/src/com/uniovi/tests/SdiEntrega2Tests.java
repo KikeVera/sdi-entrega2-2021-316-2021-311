@@ -79,7 +79,7 @@ public class SdiEntrega2Tests {
 	static public void begin() {
 		//COnfiguramos las pruebas.
 		//Fijamos el timeout en cada opción de carga de una vista. 2 segundos.
-		PO_View.setTimeout(3);
+		PO_View.setTimeout(4);
 
 	}
 	@AfterClass
@@ -159,7 +159,8 @@ public class SdiEntrega2Tests {
 		// Rellenamos el formulario.
 		PO_LoginView.fillForm(driver, "PacoGonzalez@gmail.com", "123456");
 		// Comprobamos estamos en la pagina principal del usuario estandar
-		SeleniumUtils.textoPresentePagina(driver,"Ofertas");
+		
+		PO_View.checkElement(driver, "h2", "Ofertas");
 	}
 	
 	//PR06. Inicio de sesión con datos inválidos (email existente, pero contraseña incorrecta). 
