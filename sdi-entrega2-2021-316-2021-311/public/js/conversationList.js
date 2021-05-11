@@ -151,10 +151,7 @@ function actualizarMensajesSinLeer(id){
         error : function (error){
 
 
-            if(error.status!==403){
-                desconectar();
-                errorMostrar=error.responseJSON.error;
-            }
+
 
 
         }

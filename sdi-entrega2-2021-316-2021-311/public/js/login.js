@@ -28,7 +28,7 @@ $("#boton-login").click(function (){
 
         error:function (error){
             //Si hay un error en el login se muestra el mensaje de error
-
+            $("p").remove(".alert-danger");
             Cookies.remove('token');
             $("#widget-login").prepend("<p class='alert alert-danger'>"+error.responseJSON.error+"</p>");
 

@@ -36,6 +36,7 @@ function desconectar(){
 function mostrarConversacion(idOferta){
     //Se guarda en las cookies el id de la oferta para usarlo mas adelante en la conversación
     Cookies.set('idOferta', idOferta);
+
     $( "#contenedor-principal" ).load( "../widget-conversacion.html");
 
 }

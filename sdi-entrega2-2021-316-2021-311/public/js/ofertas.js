@@ -19,10 +19,7 @@ function cargarOfertas(){
             $("p").remove(".alert-danger");
             //Mostramos el error correspondiente
 
-            if(error.status===403)
-                errorMostrar="Error obteniendo ofertas, posiblemente su sesión este caducada";
-            else
-                errorMostrar=error.responseJSON.error;
+            errorMostrar=error.responseJSON.error;
         }
     });
 }

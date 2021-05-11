@@ -12,6 +12,8 @@ else if( idOfertaSeleccionada==null){
 }
 
 else {
+     let idConversacion;
+     let comprobado=false;
 
     //Función para obtener la conversación de la oferta
     function getConversacion() {
@@ -22,6 +24,9 @@ else {
             headers: {"token": token},
             dataType: 'json',
             success: function (respuesta) {
+
+                comprobado=true;
+                $("#mensajes-listos").empty();
                 //Si conseguimos obtener la conversación del usuario en esta oferta vamos a la funcíón que obtiene los mensajes
                 if(respuesta.interesado.length>0) {
                     idConversacion=respuesta.interesado[0]._id;
@@ -136,10 +141,11 @@ else {
                 $("p").remove(".alert-danger");
                 //Mostramos el error correspondiente
 
-                if(error.status===403)
-                    errorMostrar="Error leyendo mensaje, posiblemente su sesión este caducada";
-                else
+                if(error.status!==403){
+                    desconectar();
                     errorMostrar=error.responseJSON.error;
+                }
+
 
             },
 
@@ -160,39 +166,38 @@ else {
             urlConcreta=urlConcreta+"/"+idConversacion;
 
          }
+        if(comprobado) {
+            $.ajax({
+                url: URLbase + "/mensajes/enviar" + urlConcreta,
+                type: "POST",
+                data: {
+                    //Enviamos en el cuerpo lo que esté escrito
+                    texto: $("#message").val()
 
-        $.ajax({
-            url: URLbase + "/mensajes/enviar"+urlConcreta,
-            type: "POST",
-            data: {
-                //Enviamos en el cuerpo lo que esté escrito
-                texto: $("#message").val()
-
-            },
-            headers: {"token": token},
-            dataType: 'json',
-            success: function (respuesta) {
-
-
+                },
+                headers: {"token": token},
+                dataType: 'json',
+                success: function (respuesta) {
 
 
-            },
+                },
 
-            error: function (error) {
-                //Si hay un error nos desconectamos
-                desconectar();
-                $("p").remove(".alert-danger");
-                //Mostramos el error correspondiente
+                error: function (error) {
+                    //Si hay un error nos desconectamos
+                    desconectar();
+                    $("p").remove(".alert-danger");
+                    //Mostramos el error correspondiente
 
-                if(error.status===403)
-                    errorMostrar="Error enviando mensaje, posiblemente su sesión este caducada";
-                else
-                    errorMostrar=error.responseJSON.error;
+                    if (error.status === 403)
+                        errorMostrar = "Error enviando mensaje, posiblemente su sesión este caducada";
+                    else
+                        errorMostrar = error.responseJSON.error;
 
-            },
+                },
 
 
-        });
+            });
+        }
 
 
     });
