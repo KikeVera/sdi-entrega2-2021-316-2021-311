@@ -23,7 +23,7 @@ import com.uniovi.tests.pageobjects.PO_LoginView;
 import com.uniovi.tests.pageobjects.PO_MongoServer;
 
 import com.uniovi.tests.pageobjects.PO_View;
-import com.uniovi.tests.util.SeleniumUtils;
+
 
 //Ordenamos las pruebas por el nombre del método
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) 
@@ -37,7 +37,7 @@ public class SdiEntrega2ClientTests {
 		static String Geckdriver024="C:\\Users\\Kike\\Desktop\\SDI\\geckoDriver\\geckodriver024win64.exe";
 	
 	static WebDriver driver = getDriver(PathFirefox65, Geckdriver024); 
-	static String URLHTML = "https://localhost:8081/cliente.html?w=ofertas";
+	static String URLHTML = "https://localhost:8081/cliente.html?w=login";
 	
 	
 	public static WebDriver getDriver(String PathFirefox, String Geckdriver) {
@@ -65,7 +65,7 @@ public class SdiEntrega2ClientTests {
 	@BeforeClass 
 	static public void begin() {
 		//COnfiguramos las pruebas.
-		PO_View.setTimeout(6);
+		PO_View.setTimeout(8);
 
 	}
 	@AfterClass
@@ -155,6 +155,8 @@ public class SdiEntrega2ClientTests {
 			msg.click();
 			msg.clear();
 			msg.sendKeys("Hola que tal");
+			//Esperamos  a que cargue la conversacion
+			PO_View.checkNotElement(driver, "Cargando...");
 			//Enviamos el mensaje
 			By boton = By.id("boton-send-message");
 			driver.findElement(boton).click();	
@@ -195,6 +197,8 @@ public class SdiEntrega2ClientTests {
 			msg.click();
 			msg.clear();
 			msg.sendKeys("Hola que tal");
+			//Esperamos  a que cargue la conversacion
+			PO_View.checkNotElement(driver, "Cargando...");
 			//Enviamos el mensaje
 			By boton = By.id("boton-send-message");
 			driver.findElement(boton).click();	
@@ -273,11 +277,11 @@ public class SdiEntrega2ClientTests {
 			
 			List<Document> conversations = PO_MongoServer.getConversationsByEmail("PacoGonzalez@gmail.com");
 			
-			elementos = PO_View.checkElement(driver, "free", "/html/body/div/div/table/tbody/tr["+(conversations.size()+1)+"]/td[2]");
+			elementos = PO_View.checkElement(driver, "free", "/html/body/div/div/table/tbody/tr["+(conversations.size())+"]/td[2]");
 			String oferta = elementos.get(0).getText();	
 			
 			//Clickamos en eliminar
-			elementos = PO_View.checkElement(driver, "free", "/html/body/div/div/table/tbody/tr["+(conversations.size()+1)+"]/td[5]/a");
+			elementos = PO_View.checkElement(driver, "free", "/html/body/div/div/table/tbody/tr["+(conversations.size())+"]/td[5]/a");
 			elementos.get(0).click();
 			
 			//Comprobamos que se elimino
@@ -308,6 +312,8 @@ public class SdiEntrega2ClientTests {
 			msg.click();
 			msg.clear();
 			msg.sendKeys("Hola que tal");
+			//Esperamos  a que cargue la conversacion
+			PO_View.checkNotElement(driver, "Cargando...");
 			//Enviamos el mensaje
 			By boton = By.id("boton-send-message");
 			driver.findElement(boton).click();	
@@ -320,8 +326,7 @@ public class SdiEntrega2ClientTests {
 			elementos.get(0).click();
 			
 			// Vamos al formulario de inicio de sesion con emilio
-			 elementos = PO_View.checkElement(driver, "free", "//*[@id=\"mLogin\"]/a");
-			elementos.get(0).click();
+			
 			PO_LoginView.fillFormClient(driver, "EmilioFernandez@gmail.com", "123456");
 			PO_View.checkElement(driver, "text", "Ofertas de la tienda");
 			
@@ -337,6 +342,9 @@ public class SdiEntrega2ClientTests {
 			//Hacemos click en conversar en la conversación de ofertaTest5
 			elementos= PO_View.checkElement(driver, "free","//td[text()= 'OfertaTest5']/following-sibling::*[2]/a");
 			elementos.get(0).click();
+			
+			//Esperamos  a que cargue la conversacion
+			PO_View.checkNotElement(driver, "Cargando...");
 			
 			//Chekeamos que nada mas entrar el mensaje no está leído
 			PO_View.checkElement(driver, "text", "✔");
@@ -356,26 +364,64 @@ public class SdiEntrega2ClientTests {
 			
 			//Inicializamos conversaciones
 			PO_MongoServer.initialiceConversations();
-
+			
 			// Vamos al formulario de inicio de sesion
 			List<WebElement> elementos = PO_View.checkElement(driver, "free", "//*[@id=\"mLogin\"]/a");
 			elementos.get(0).click();
 			PO_LoginView.fillFormClient(driver, "PacoGonzalez@gmail.com", "123456");
 			PO_View.checkElement(driver, "text", "Ofertas de la tienda");
+			
+			//Hacemos click en la ofertaTest5 que no tiene ninguna conversación
+			elementos= PO_View.checkElement(driver, "free","//td[text()= 'OfertaTest5']/following-sibling::*[4]");
+			elementos.get(0).click();
+			
+			//Escribimos un mensaje en el campo de texto
+			WebElement msg = driver.findElement(By.id("message"));
+			msg.click();
+			msg.clear();
+			msg.sendKeys("Hola que tal");
+			//Esperamos  a que cargue la conversacion
+			PO_View.checkNotElement(driver, "Cargando...");
+			//Enviamos los mensajes
+			By boton = By.id("boton-send-message");
+			driver.findElement(boton).click();	
+			PO_View.checkElement(driver, "text", "Hola que tal");	
+			
+			msg.click();
+			msg.clear();
+			msg.sendKeys("Hola que tal2");
+		
+			driver.findElement(boton).click();
+			PO_View.checkElement(driver, "text", "Hola que tal2");	
+			
+			msg.click();
+			msg.clear();
+			msg.sendKeys("Hola que tal3");
+			driver.findElement(boton).click();
+			PO_View.checkElement(driver, "text", "Hola que tal3");	
+			
+			PO_View.checkElement(driver, "class", "propios");
+			
+			//Nos desconectamos
+			 elementos = PO_View.checkElement(driver, "free", "//*[@id=\"mdesconectar\"]/a");
+			elementos.get(0).click();
+			
+			// Vamos al formulario de inicio de sesion con emilio
+			
+			PO_LoginView.fillFormClient(driver, "EmilioFernandez@gmail.com", "123456");
+			
+			
+			PO_View.checkElement(driver, "text", "Ofertas de la tienda");
+			
 			//Nos dirigimos a nuestras conversaciones
+			
 			elementos = PO_View.checkElement(driver, "free", "//*[@id=\"mConversaciones\"]/a");
 			elementos.get(0).click();
-			PO_View.checkElement(driver, "text", "Lista de conversaciones");
 			
-			//Obtenemos la lista de elementos
-			elementos = SeleniumUtils.EsperaCargaPagina(driver, "free", "/html/body/div/div/table/tbody/tr", PO_View.getTimeout());
-			for (int i = 0;i<elementos.size();i++) {
-				WebElement elemento = PO_View.checkElement(driver, "free", "/html/body/div/div/table/tbody/tr["+(i+1)+"]/td[2]").get(0);
-				String oferta = elemento.getText();
-				if(oferta.equals("OfertaTest2")) {
-					PO_View.checkElement(driver, "free", "/html/body/div/div/table/tbody/tr["+(i+1)+"]/td[contains(text(), '3')]").get(0);
-					break;
-				}
-			}
+			//Comprobamos que hay un mensaje sin leer
+			elementos= PO_View.checkElement(driver, "free","//td[text()= 'OfertaTest5']/following-sibling::td[text()='3']");
+			
+			
+		
 		}
 }
