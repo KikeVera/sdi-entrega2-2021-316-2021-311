@@ -180,7 +180,15 @@ module.exports = function(app,swig,gestorBD) {
                         app.get("logger").fatal("Error al borrar oferta");
                         res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al borrar oferta");
                     } else {
-                        res.redirect("/ofertas/propias");
+                        let criterio2 = {"idOferta" : gestorBD.mongo.ObjectID(req.params.id)}
+                        gestorBD.eliminarConversacionesCascada(criterio2,function (conversaciones){
+                            if(conversaciones == null){
+                                app.get("logger").fatal("Error al borrar oferta");
+                                res.redirect("/ofertas/propias?tipoMensaje=alert-danger&mensaje=Error al borrar conversaciones de la oferta");
+                            }else{
+                                res.redirect("/ofertas/propias");
+                            }
+                        });
                     }
                 });
             }

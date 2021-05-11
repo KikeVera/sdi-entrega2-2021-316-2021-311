@@ -61,14 +61,14 @@ module.exports = function(app,swig,gestorBD) {
                        }else{
                            criterio = {emailInteresado: listaDeEmails[0]}
                            //Elimina las conversaciones donde el usaurio es el interesado
-                           gestorBD.eliminarConversaciones(criterio,function (conversacion) {
+                           gestorBD.eliminarConversacionesCascada(criterio,function (conversacion) {
                                if(conversacion===null){
                                    app.get("logger").fatal("Error al borrar conversaciones");
                                    res.redirect("/admin/users?tipoMensaje=alert-danger&mensaje=Error al borrar las conversaciones del usuario");
                                }else{
                                    criterio = {emailPropietario: listaDeEmails[0]}
                                    //Elimina las conversaciones donde el usaurio es el propietario
-                                   gestorBD.eliminarConversaciones(criterio,function (conversacion) {
+                                   gestorBD.eliminarConversacionesCascada(criterio,function (conversacion) {
                                        if(conversacion===null){
                                            app.get("logger").fatal("Error al borrar conversaciones");
                                            res.redirect("/admin/users?tipoMensaje=alert-danger&mensaje=Error al borrar las conversaciones del usuario");

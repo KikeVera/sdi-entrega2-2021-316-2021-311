@@ -395,7 +395,7 @@ module.exports = function(app, gestorBD) {
 
 
         //Se elimina la conversación
-        gestorBD.eliminarConversaciones(criterioConversacion,function(conversaciones){
+        gestorBD.eliminarConversacionesCascada(criterioConversacion,function(conversaciones){
             if ( conversaciones == null ){
                 app.get("logger").fatal("Se ha producido un error eliminando conversaciones");
                 res.status(500);
@@ -403,26 +403,8 @@ module.exports = function(app, gestorBD) {
                     error : "Se ha producido un error eliminando conversaciones"
                 })
             } else {
-                //Se eliminan los mensajes asociados a la conversación
-                let criterioMensajes = {"idConversacion":gestorBD.mongo.ObjectID(req.params.idConversacion)};
-
-                gestorBD.eliminarMensajes(criterioMensajes,function(mensajes){
-                    if ( mensajes == null ){
-                        app.get("logger").fatal("Se ha producido un error eliminando mensajes");
-                        res.status(500);
-                        res.json({
-                            error : "Se ha producido un error eliminando mensajes"
-                        })
-                    } else {
-
-
-                        res.status(200);
-                        res.send(JSON.stringify(conversaciones));
-
-                    }
-                });
-
-
+                res.status(200);
+                res.send(JSON.stringify(conversaciones));
             }
         });
     });
